@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>小红书卡片生成器</title>
+    <!-- Keep Google Fonts as they are external resources -->
+    <link href="https://fonts.googleapis.com/css2?family=Long+Cang&family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@400;700;900&family=Noto+Serif+SC:wght@400;700&family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <style>
+      /* Keep basic resets */
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      body {
+        background-color: #f3f4f6;
+        overscroll-behavior: none;
+        -webkit-tap-highlight-color: transparent;
+      }
+      /* Tailwind directives are injected via JS in Vite, or we can use a simple style block if not using a CSS file. 
+         For simplicity in this setup without a separate global.css file, we inject base tailwind styles via the build process 
+         but since we don't have a CSS file in the file list, we rely on the tailwind.config.js content scanning. 
+      */
+    </style>
+    <!-- Add Tailwind directives placeholder - in a real Vite app this usually goes in index.css -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+       // We keep the CDN for Tailwind temporarily for local preview if needed, 
+       // but strictly speaking, in a Vite build, we should import a CSS file.
+       // However, to keep your file structure simple without creating new CSS files:
+       // We will let the build process handle JS logic and keep Tailwind via CDN for simplicity 
+       // OR prefer the package.json approach.
+       // ACTUALLY: For Cloudflare production, it's best to use the built-in PostCSS.
+       // I will inject a small script to load styles or assume index.tsx imports css.
+    </script>
+    <script>
+      // Inject config for the CDN version just in case, but the build will use tailwind.config.js
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              xhs: '#ff2442',
+              'sketch-bg': '#FFFBF0',
+              'sketch-text': '#3C3C3C',
+              'sketch-accent': '#FF5722',
+              'sketch-border': '#B0A294',
+            },
+            fontFamily: {
+              'sans-sc': ['"Noto Sans SC"', 'sans-serif'],
+              'serif-sc': ['"Noto Serif SC"', 'serif'],
+              'handwriting': ['"Ma Shan Zheng"', 'cursive'],
+              'artistic': ['"ZCOOL XiaoWei"', 'serif'],
+              'poster': ['"ZCOOL QingKe HuangYou"', 'sans-serif'],
+              'happy': ['"ZCOOL KuaiLe"', 'cursive'],
+              'calligraphy': ['"Long Cang"', 'cursive'],
+            },
+             animation: {
+              'fade-in': 'fadeIn 0.3s ease-out',
+              'slide-up': 'slideUp 0.3s ease-out',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+              fadeIn: {
+                '0%': { opacity: '0' },
+                '100%': { opacity: '1' },
+              },
+              slideUp: {
+                '0%': { transform: 'translateY(100%)' },
+                '100%': { transform: 'translateY(0)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.555.0",
+    "html2canvas": "https://aistudiocdn.com/html2canvas@^1.4.1",
+    "vite": "https://aistudiocdn.com/vite@^7.2.4",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
