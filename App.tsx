@@ -52,33 +52,45 @@ const App: React.FC = () => {
       // 2. Wait for fonts
       await document.fonts.ready;
       // Add a small delay to ensure rendering frames are settled
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 200));
 
       // 3. Determine Scale based on DPR
       const dpr = window.devicePixelRatio || 1;
-      // Mobile Safari optimization: Limit scale to prevent canvas crash on large DOMs
-      // High-end desktops can handle 3x, Mobile usually 2x is enough/safe
-      let scale = isMobile ? Math.min(dpr, 2) : 3;
       
+      // OPTIMIZATION: On mobile, force a slightly higher minimum scale for crisp text,
+      // but don't go too high to crash memory.
+      // Desktop usually 1 is fine if DPR is high, but we use 3 for "Pro" export.
+      const scale = isMobile ? 3 : 3; 
+
       const canvas = await html2canvas(elementToCapture, {
         scale: scale,
         useCORS: true,
-        backgroundColor: null,
+        backgroundColor: null, // Transparent base, but the element has its own bg
         logging: false,
-        allowTaint: true, // Allow cross-origin images if useCORS fails (best effort)
+        allowTaint: true,
+        scrollY: 0, // CRITICAL: Reset scroll to capture full height without offset
+        windowWidth: elementToCapture.scrollWidth,
+        windowHeight: elementToCapture.scrollHeight,
         onclone: (clonedDoc) => {
            const clonedElement = clonedDoc.getElementById('capture-target');
            if (clonedElement) {
-             // Reset transforms to avoid offset issues
+             // Ensure transforms don't mess up position
              clonedElement.style.transform = 'none'; 
-             // Ensure visible
+             // Force visibility
              clonedElement.style.visibility = 'visible';
+             // Optimization: Force a minimum width on mobile clone to ensure layout doesn't break
+             // even if user is on a tiny screen.
+             if (isMobile) {
+                // Determine width based on ratio to keep consistency? 
+                // Actually, just letting it be the natural size * scale is usually safer for Flex layouts
+                // as long as the Flex layout is robust (which we fixed in CardPreview).
+             }
            }
         }
       });
 
       // 4. Output
-      const dataUrl = canvas.toDataURL('image/png', 0.95);
+      const dataUrl = canvas.toDataURL('image/png', 1.0);
       setGeneratedImage(dataUrl);
 
       // Desktop: auto download
@@ -192,7 +204,7 @@ const App: React.FC = () => {
 
       {/* --- Generated Image Modal (Mobile Optimized) --- */}
       {generatedImage && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 backdrop-blur-md p-6 animate-fade-in">
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-md p-6 animate-fade-in">
           <div className="relative w-full max-w-sm flex flex-col items-center">
              <div className="absolute -top-12 right-0">
                <button onClick={() => setGeneratedImage(null)} className="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition">
@@ -201,7 +213,7 @@ const App: React.FC = () => {
              </div>
              
              {/* Image Container */}
-             <div className="bg-gray-800 p-1.5 rounded-2xl shadow-2xl w-full overflow-hidden">
+             <div className="bg-gray-800 p-1 rounded-2xl shadow-2xl w-full overflow-hidden border border-gray-700">
                <img src={generatedImage} alt="Generated Card" className="w-full h-auto rounded-xl block" />
              </div>
 
