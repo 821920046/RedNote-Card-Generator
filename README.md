@@ -1,20 +1,29 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🎨 RedNote Card Generator | 小红书风格卡片生成器
 
-# Run and deploy your AI Studio app
+> **一款专为内容创作者打造的轻量级、高颜值可视化卡片制作工具。**
 
-This contains everything you need to run your app locally.
+RedNote Card Gen 是一个基于 React 和 TypeScript 开发的在线工具，旨在帮助用户快速生成排版精美、风格独特的社交媒体配图（特别是小红书风格）。无需复杂的设计软件，通过简单的配置即可生成“干货清单”、“金句语录”、“知识拼图”等多种流行版式的高清图片。
 
-View your app in AI Studio: https://ai.studio/apps/drive/1_WIjOLQztJHdvBdpBpr4XdwssvEg56pt
+### ✨ 核心亮点
 
-## Run Locally
+*   **📱 极致的移动端适配**：采用 Mobile-First 设计理念。桌面端提供侧边栏实时编辑，移动端采用原生体验的“抽屉式”面板，支持触摸手势，编辑体验流畅。
+*   **🎨 丰富的主题系统**：内置 15+ 款精心调配的配色方案（极简白、奶油风、红书红、黑曜石、赛博朋克等），支持纯色及渐变背景，并允许用户自定义颜色。
+*   **📐 多样的排版布局**：提供 6 种核心布局模式：
+    *   **干货清单**：适合教程和步骤分享。
+    *   **金句语录**：突出文字情感。
+    *   **名词解释**：经典的词典卡片风格。
+    *   **知识拼图**：Grid 布局，适合碎片化知识。
+    *   **手绘涂鸦**：模拟手账风格，虚线边框与手写字体。
+    *   **极简高级**：留白艺术，适合高端氛围。
+*   **🔠 个性化字体库**：集成了多款 Google Fonts 优质字体（站酷高端黑、站酷快乐体、马山正毛笔、龙沧狂草等），满足从商务到可爱的各种场景需求。
+*   **🖼️ 高清导出**：利用 `html2canvas` 技术，支持 2 倍/3 倍图导出，智能处理不同设备的像素密度（DPR），确保在 Retina 屏幕上生成的图片依然清晰锐利。
+*   **⚡ 现代化技术栈**：基于 Vite 构建，秒级启动；使用 Tailwind CSS 实现原子化样式管理；全类型安全（TypeScript）。
 
-**Prerequisites:**  Node.js
+### 🛠️ 技术栈
 
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+*   **核心框架**: React 18, TypeScript
+*   **构建工具**: Vite
+*   **样式库**: Tailwind CSS, PostCSS
+*   **图标库**: Lucide React
+*   **图片生成**: html2canvas
+*   **部署**: Cloudflare Pages / Vercel
