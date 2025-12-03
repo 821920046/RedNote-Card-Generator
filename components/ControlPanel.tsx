@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CardState, ThemeId, LayoutId, AspectRatio, FontSize } from '../types';
 import { THEME_GROUPS, LAYOUTS, RATIOS, FONTS, PRESETS } from '../constants';
-import { ChevronDown, ChevronUp, Type, Palette, Layout, Smartphone, Download, Loader2, Sparkles, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, Type, Palette, Layout, Smartphone, Download, Loader2, Sparkles, X, Image as ImageIcon, QrCode, Calendar } from 'lucide-react';
 
 interface ControlPanelProps {
   state: CardState;
@@ -16,6 +16,17 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, setState, isMobile, 
 
   const handleChange = (key: keyof CardState, value: any) => {
     setState(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleChange('backgroundImage', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const loadPreset = (presetId: string) => {
@@ -109,7 +120,46 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, setState, isMobile, 
               <p className="text-xs text-gray-400">提示：以数字 "1." 开头会自动变为列表样式</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {/* Elements Toggle */}
+            <div className="space-y-3 pt-2 border-t border-gray-100">
+               <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">显示元素</label>
+               
+               <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                     <Calendar size={16} />
+                     <span>日期日签</span>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked={state.showDate} onChange={(e) => handleChange('showDate', e.target.checked)} className="sr-only peer" />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+                  </label>
+               </div>
+
+               <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm text-gray-700">
+                     <QrCode size={16} />
+                     <span>二维码</span>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox" checked={state.showQrCode} onChange={(e) => handleChange('showQrCode', e.target.checked)} className="sr-only peer" />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+                  </label>
+               </div>
+
+               {state.showQrCode && (
+                  <div className="animate-fade-in pl-6">
+                    <input
+                      type="text"
+                      value={state.qrCodeContent}
+                      onChange={(e) => handleChange('qrCodeContent', e.target.value)}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 outline-none"
+                      placeholder="二维码链接或内容"
+                    />
+                  </div>
+               )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700">作者</label>
                 <input
@@ -135,6 +185,34 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, setState, isMobile, 
         {/* Style Tab */}
         {activeTab === 'style' && (
           <div className="space-y-6 animate-fade-in">
+             {/* Background Image Upload */}
+             <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">背景图片</label>
+                <div className="flex gap-2">
+                   <label className="flex-1 cursor-pointer group">
+                      <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                      <div className="h-20 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-500 hover:border-red-400 hover:text-red-500 transition hover:bg-red-50">
+                         <ImageIcon size={20} className="mb-1" />
+                         <span className="text-xs">上传图片</span>
+                      </div>
+                   </label>
+                   {state.backgroundImage && (
+                      <div className="relative h-20 w-20 rounded-xl overflow-hidden border border-gray-200">
+                         <img src={state.backgroundImage} alt="Background" className="w-full h-full object-cover" />
+                         <button 
+                            onClick={() => handleChange('backgroundImage', null)}
+                            className="absolute top-1 right-1 p-1 bg-black/50 text-white rounded-full hover:bg-red-500 transition"
+                         >
+                            <X size={12} />
+                         </button>
+                      </div>
+                   )}
+                </div>
+                {state.backgroundImage && (
+                   <p className="text-xs text-gray-400">背景图模式下，建议使用【自定义】主题调整文字颜色以确保清晰度。</p>
+                )}
+             </div>
+
             {/* Theme Selector */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">配色主题</label>

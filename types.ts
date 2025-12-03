@@ -20,6 +20,11 @@ export interface CardState {
   customAccentColor: string;
   customTextColor: string;
   customBgColor: string;
+  // New features
+  backgroundImage: string | null;
+  showQrCode: boolean;
+  qrCodeContent: string;
+  showDate: boolean;
 }
 
 export interface ThemeConfig {

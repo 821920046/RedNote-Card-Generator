@@ -4,7 +4,7 @@ import { CardState } from './types';
 import { RATIOS } from './constants';
 import ControlPanel from './components/ControlPanel';
 import CardPreview from './components/CardPreview';
-import { Download, Edit2, X, Sparkles, Loader2, Share2, Check, Smartphone, Image as ImageIcon } from 'lucide-react';
+import { Download, Edit2, X, Sparkles, Loader2, Share2, Check, Smartphone } from 'lucide-react';
 
 const App: React.FC = () => {
   // --- State ---
@@ -22,6 +22,10 @@ const App: React.FC = () => {
     customAccentColor: '#FF2442',
     customTextColor: '#1f1f1f',
     customBgColor: '#ffffff',
+    backgroundImage: null,
+    showQrCode: false,
+    qrCodeContent: 'https://www.xiaohongshu.com',
+    showDate: true,
   });
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -55,11 +59,8 @@ const App: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 200));
 
       // 3. Determine Scale based on DPR
-      const dpr = window.devicePixelRatio || 1;
-      
       // OPTIMIZATION: On mobile, force a slightly higher minimum scale for crisp text,
       // but don't go too high to crash memory.
-      // Desktop usually 1 is fine if DPR is high, but we use 3 for "Pro" export.
       const scale = isMobile ? 3 : 3; 
 
       const canvas = await html2canvas(elementToCapture, {
@@ -78,13 +79,6 @@ const App: React.FC = () => {
              clonedElement.style.transform = 'none'; 
              // Force visibility
              clonedElement.style.visibility = 'visible';
-             // Optimization: Force a minimum width on mobile clone to ensure layout doesn't break
-             // even if user is on a tiny screen.
-             if (isMobile) {
-                // Determine width based on ratio to keep consistency? 
-                // Actually, just letting it be the natural size * scale is usually safer for Flex layouts
-                // as long as the Flex layout is robust (which we fixed in CardPreview).
-             }
            }
         }
       });
@@ -127,7 +121,7 @@ const App: React.FC = () => {
              <div className="p-1.5 bg-red-500 rounded-lg text-white">
                 <Sparkles size={18} />
              </div>
-             小红书卡片生成器
+             RedNote Card Generator
            </div>
            <button 
             onClick={handleDownload}
