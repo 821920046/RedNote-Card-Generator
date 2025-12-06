@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import html2canvas from 'html2canvas';
 import { toPng } from 'html-to-image';
 import { CardState } from './types';
 import { RATIOS } from './constants';
+import { processContent } from './utils/contentProcessor';
 import ControlPanel from './components/ControlPanel';
 import CardPreview from './components/CardPreview';
 import { Download, Edit2, X, Sparkles, Loader2, Share2, Check, Smartphone, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -34,6 +35,8 @@ const App: React.FC = () => {
     textAlign: 'left',
     autoFontSize: true,
     exportEngine: 'html2canvas',
+    autoEmoji: true,
+    autoPaginate: true,
   });
 
   // Load draft from localStorage on mount
@@ -65,8 +68,16 @@ const App: React.FC = () => {
   // --- Pagination Logic ---
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Split content by divider '==='
-  const slides = state.content.split(/\n={3,}\n/).map(s => s.trim());
+  // Process content with auto-pagination and emoji insertion
+  const processedContent = useMemo(() => {
+    if (state.autoPaginate || state.autoEmoji) {
+      return processContent(state.content, state.aspectRatio, state.autoEmoji);
+    }
+    return state.content;
+  }, [state.content, state.aspectRatio, state.autoEmoji, state.autoPaginate]);
+
+  // Split content by divider '===' (either manual or auto-generated)
+  const slides = processedContent.split(/\n={3,}\n/).map(s => s.trim()).filter(s => s.length > 0);
 
   // Reset current slide if out of bounds (e.g. after editing)
   useEffect(() => {
@@ -75,7 +86,7 @@ const App: React.FC = () => {
     }
   }, [slides.length, currentSlide]);
 
-  const currentContent = slides[currentSlide] || state.content;
+  const currentContent = slides[currentSlide] || processedContent;
 
   // Responsive check
   const [isMobile, setIsMobile] = useState(false);

@@ -36,6 +36,10 @@ export interface CardState {
 
   // Date
   showDate: boolean;
+
+  // Content Processing
+  autoEmoji: boolean;
+  autoPaginate: boolean;
 }
 
 export interface ThemeConfig {

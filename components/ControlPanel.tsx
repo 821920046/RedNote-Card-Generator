@@ -149,6 +149,36 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, setState, isMobile, 
 
             {/* Elements Toggle */}
             <div className="space-y-3 pt-2 border-t border-gray-100">
+              <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">智能处理</label>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <span>✨</span>
+                  <span>自动插入 Emoji</span>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked={state.autoEmoji} onChange={(e) => handleChange('autoEmoji', e.target.checked)} className="sr-only peer" />
+                  <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-gray-700">
+                  <span>📄</span>
+                  <span>自动分页</span>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked={state.autoPaginate} onChange={(e) => handleChange('autoPaginate', e.target.checked)} className="sr-only peer" />
+                  <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
+                </label>
+              </div>
+              <p className="text-[10px] text-gray-400">
+                {state.autoPaginate ? `当前比例 ${state.aspectRatio}：超出字数自动分页` : '关闭时需手动插入 === 分隔符'}
+              </p>
+            </div>
+
+            {/* Display Elements */}
+            <div className="space-y-3 pt-2 border-t border-gray-100">
               <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">显示元素</label>
 
               <div className="flex items-center justify-between">
