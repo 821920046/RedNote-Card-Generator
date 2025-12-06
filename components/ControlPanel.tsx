@@ -109,10 +109,22 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, setState, isMobile, 
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700 flex justify-between items-center">
-                <span>正文内容</span>
-                <span className="text-xs font-normal text-red-500 bg-red-50 px-2 py-0.5 rounded-full">支持 Markdown</span>
-              </label>
+              <div className="flex justify-between items-center">
+                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <span>正文内容</span>
+                  <span className="text-xs font-normal text-red-500 bg-red-50 px-2 py-0.5 rounded-full">支持 Markdown</span>
+                </label>
+                <button
+                  onClick={() => {
+                    const separator = "\n\n===\n\n";
+                    handleChange('content', state.content + separator);
+                  }}
+                  className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-1 rounded transition"
+                  title="插入分页符"
+                >
+                  + 插入分页
+                </button>
+              </div>
               <textarea
                 value={state.content}
                 onChange={(e) => handleChange('content', e.target.value)}

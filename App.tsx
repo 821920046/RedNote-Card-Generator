@@ -4,7 +4,7 @@ import { CardState } from './types';
 import { RATIOS } from './constants';
 import ControlPanel from './components/ControlPanel';
 import CardPreview from './components/CardPreview';
-import { Download, Edit2, X, Sparkles, Loader2, Share2, Check, Smartphone } from 'lucide-react';
+import { Download, Edit2, X, Sparkles, Loader2, Share2, Check, Smartphone, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const App: React.FC = () => {
   // --- State ---
@@ -33,6 +33,21 @@ const App: React.FC = () => {
   const [isMobileEditOpen, setIsMobileEditOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
+  // --- Pagination Logic ---
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Split content by divider '==='
+  const slides = state.content.split(/\n={3,}\n/).map(s => s.trim());
+
+  // Reset current slide if out of bounds (e.g. after editing)
+  useEffect(() => {
+    if (currentSlide >= slides.length) {
+      setCurrentSlide(0);
+    }
+  }, [slides.length, currentSlide]);
+
+  const currentContent = slides[currentSlide] || state.content;
+
   // Responsive check
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -49,6 +64,9 @@ const App: React.FC = () => {
 
     try {
       // 1. Get the actual content div
+      // Use a timeout to ensure React has re-rendered any state changes if needed
+      await new Promise(resolve => setTimeout(resolve, 50));
+
       const elementToCapture = cardRef.current.querySelector('#capture-target') as HTMLElement;
 
       if (!elementToCapture) throw new Error("Capture target not found");
@@ -59,25 +77,21 @@ const App: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 200));
 
       // 3. Determine Scale based on DPR
-      // OPTIMIZATION: On mobile, force a slightly higher minimum scale for crisp text,
-      // but don't go too high to crash memory.
       const scale = isMobile ? 3 : 3;
 
       const canvas = await html2canvas(elementToCapture, {
         scale: scale,
         useCORS: true,
-        backgroundColor: null, // Transparent base, but the element has its own bg
+        backgroundColor: null,
         logging: false,
         allowTaint: true,
-        scrollY: 0, // CRITICAL: Reset scroll to capture full height without offset
+        scrollY: 0,
         windowWidth: elementToCapture.scrollWidth,
         windowHeight: elementToCapture.scrollHeight,
         onclone: (clonedDoc) => {
           const clonedElement = clonedDoc.getElementById('capture-target');
           if (clonedElement) {
-            // Ensure transforms don't mess up position
             clonedElement.style.transform = 'none';
-            // Force visibility
             clonedElement.style.visibility = 'visible';
           }
         }
@@ -91,7 +105,7 @@ const App: React.FC = () => {
       if (!isMobile) {
         const link = document.createElement('a');
         link.href = dataUrl;
-        link.download = `xhs-card-${Date.now()}.png`;
+        link.download = `xhs-card-p${currentSlide + 1}-${Date.now()}.png`;
         link.click();
       }
 
@@ -148,8 +162,31 @@ const App: React.FC = () => {
               maxHeight: isMobile ? '70vh' : 'none',
             }}
           >
-            <CardPreview ref={cardRef} state={state} />
+            <CardPreview ref={cardRef} state={{ ...state, content: currentContent }} />
           </div>
+
+          {/* Pagination Controls */}
+          {slides.length > 1 && (
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-gray-200 z-20">
+              <button
+                onClick={() => setCurrentSlide(Math.max(0, currentSlide - 1))}
+                disabled={currentSlide === 0}
+                className="p-1 rounded-full hover:bg-gray-100 disabled:opacity-30 transition"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <span className="text-sm font-medium tabular-nums text-gray-700">
+                {currentSlide + 1} / {slides.length}
+              </span>
+              <button
+                onClick={() => setCurrentSlide(Math.min(slides.length - 1, currentSlide + 1))}
+                disabled={currentSlide === slides.length - 1}
+                className="p-1 rounded-full hover:bg-gray-100 disabled:opacity-30 transition"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* --- Mobile: Bottom Action Bar --- */}
