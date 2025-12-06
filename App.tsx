@@ -26,6 +26,12 @@ const App: React.FC = () => {
     showQrCode: false,
     qrCodeContent: 'https://www.xiaohongshu.com',
     showDate: true,
+    // Typography Defaults
+    lineHeight: 1.75,
+    letterSpacing: 0,
+    paragraphSpacing: 12,
+    textAlign: 'left',
+    autoFontSize: true,
   });
 
   // Load draft from localStorage on mount

@@ -17,12 +17,36 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
   const sizeConfig = FONT_SIZE_MAP[state.fontSize] || FONT_SIZE_MAP.normal;
 
   // --- Dynamic Style Calculation ---
+  // --- Dynamic Style Calculation ---
   let bgClass = themeConfig.bg;
   let textClass = themeConfig.text;
   let accentClass = themeConfig.accent;
-  let accentStyle: React.CSSProperties = {};
-  let cardStyle: React.CSSProperties = {};
-  let textStyle: React.CSSProperties = {};
+
+  // Smart Font Size Logic
+  let sizeMultiplier = 1;
+  const contentLength = state.content.length;
+  if (state.autoFontSize) {
+    if (contentLength < 50) sizeMultiplier = 1.25; // Boost short text
+    else if (contentLength < 100) sizeMultiplier = 1.1;
+    else if (contentLength > 300) sizeMultiplier = 0.9;
+    else if (contentLength > 500) sizeMultiplier = 0.8;
+  }
+
+  // Calculate base styles
+  let accentStyle: React.CSSProperties = {
+    color: state.theme === 'custom' ? state.customAccentColor : undefined,
+  };
+  let cardStyle: React.CSSProperties = {
+    backgroundColor: state.theme === 'custom' ? state.customBgColor : undefined,
+  };
+  // Apply typography settings
+  let textStyle: React.CSSProperties = {
+    color: state.theme === 'custom' ? state.customTextColor : undefined,
+    lineHeight: state.lineHeight,
+    letterSpacing: `${state.letterSpacing}px`,
+    textAlign: state.textAlign,
+    fontSize: state.autoFontSize ? `${sizeMultiplier}em` : undefined, // Apply scale relative to base size
+  };
 
   // Custom styles override
   if (state.theme === 'custom') {
@@ -68,14 +92,18 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
       // Chinese Grid detection (一. ...)
       const isGridItem = /^[一二三四五六七八九十]\.\s/.test(line.trim());
 
+      // Apply paragraph spacing from state
+      const itemStyle = { ...textStyle, marginBottom: `${state.paragraphSpacing}px` };
+
+
       const bgOpacityClass = state.backgroundImage ? 'bg-white/80 backdrop-blur-sm shadow-sm' : 'bg-white/10 border-white/20';
 
       if (state.layout === 'list' && isListItem) {
         const [number, ...rest] = line.trim().split('.').map(s => s.trim());
         return (
-          <li key={index} className={`flex items-start mb-3 p-2 rounded-lg ${state.backgroundImage ? 'bg-white/60 backdrop-blur-sm' : ''}`}>
+          <li key={index} className={`flex items-start rounded-lg ${state.backgroundImage ? 'bg-white/60 backdrop-blur-sm' : ''}`} style={itemStyle}>
             <span className={`mr-2 md:mr-3 flex-shrink-0 font-extrabold ${accentClass}`} style={accentStyle}>{number}.</span>
-            <span className={`${textClass} ${sizeConfig.content} leading-relaxed`} style={textStyle}>
+            <span className={`${textClass} ${sizeConfig.content}`} style={{ lineHeight: state.lineHeight }}>
               <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>{rest.join('. ')}</ReactMarkdown>
             </span>
           </li>
@@ -112,8 +140,9 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
 
       // Default paragraph
       // Default paragraph
+      // Default paragraph
       return (
-        <div key={index} className={`${textClass} ${sizeConfig.content} mb-3 leading-relaxed whitespace-pre-wrap ${state.backgroundImage && state.layout !== 'grid' ? 'bg-white/50 p-2 rounded backdrop-blur-sm inline-block' : ''}`} style={textStyle}>
+        <div key={index} className={`${textClass} ${sizeConfig.content} whitespace-pre-wrap ${state.backgroundImage && state.layout !== 'grid' ? 'bg-white/50 p-2 rounded backdrop-blur-sm inline-block' : ''}`} style={itemStyle}>
           <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>{line}</ReactMarkdown>
         </div>
       );

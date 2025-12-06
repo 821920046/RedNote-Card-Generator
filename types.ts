@@ -24,6 +24,13 @@ export interface CardState {
   // QR Code
   showQrCode: boolean;
   qrCodeContent: string;
+  // Typography
+  lineHeight: number;
+  letterSpacing: number;
+  paragraphSpacing: number;
+  textAlign: 'left' | 'center' | 'right';
+  autoFontSize: boolean;
+
   // Date
   showDate: boolean;
 }
