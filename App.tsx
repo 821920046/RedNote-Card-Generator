@@ -28,6 +28,27 @@ const App: React.FC = () => {
     showDate: true,
   });
 
+  // Load draft from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('rednote-draft');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setState(prev => ({ ...prev, ...parsed }));
+      } catch (e) {
+        console.error('Failed to load draft:', e);
+      }
+    }
+  }, []);
+
+  // Save to localStorage on change (debounced manually by useEffect dependency)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      localStorage.setItem('rednote-draft', JSON.stringify(state));
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [state]);
+
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isMobileEditOpen, setIsMobileEditOpen] = useState(false);

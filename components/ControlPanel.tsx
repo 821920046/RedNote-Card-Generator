@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CardState, ThemeId, LayoutId, AspectRatio, FontSize } from '../types';
 import { THEME_GROUPS, LAYOUTS, RATIOS, FONTS, PRESETS } from '../constants';
-import { ChevronDown, ChevronUp, Type, Palette, Layout, Smartphone, Download, Loader2, Sparkles, X, Image as ImageIcon, QrCode, Calendar } from 'lucide-react';
+import { ChevronDown, ChevronUp, Type, Palette, Layout, Smartphone, Download, Loader2, Sparkles, X, Image as ImageIcon, QrCode, Calendar, RotateCcw } from 'lucide-react';
 
 interface ControlPanelProps {
   state: CardState;
@@ -16,6 +16,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, setState, isMobile, 
 
   const handleChange = (key: keyof CardState, value: any) => {
     setState(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleReset = () => {
+    if (confirm('确定要重置所有内容吗？这将清除当前的草稿。')) {
+      localStorage.removeItem('rednote-draft');
+      window.location.reload();
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,7 +78,13 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, setState, isMobile, 
           <div className="space-y-5 animate-fade-in">
             {/* Presets - Quick Start */}
             <div className="space-y-2">
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">快速模版</label>
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">快速模版</label>
+                <button onClick={handleReset} className="text-xs text-gray-400 hover:text-red-500 flex items-center gap-1 transition">
+                  <RotateCcw size={12} />
+                  重置
+                </button>
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 {Object.values(PRESETS).map(preset => (
                   <button
