@@ -82,11 +82,8 @@ export const LAYOUTS: { id: LayoutId; name: string; icon: any }[] = [
 ];
 
 export const RATIOS: { id: AspectRatio; name: string; value: number; label: string; icon: any }[] = [
-  { id: '1:1', name: '1:1', value: 1, label: '正方形', icon: LayoutGrid },
   { id: '3:4', name: '3:4', value: 3 / 4, label: '封面', icon: Tablet },
-  { id: '4:3', name: '4:3', value: 4 / 3, label: '横版', icon: Tablet },
-  { id: '9:16', name: '9:16', value: 9 / 16, label: '壁纸', icon: Smartphone },
-  { id: '16:9', name: '16:9', value: 16 / 9, label: '宽屏', icon: Smartphone }
+  { id: '9:16', name: '9:16', value: 9 / 16, label: '壁纸', icon: Smartphone }
 ];
 
 export const FONTS: { id: FontId; name: string }[] = [

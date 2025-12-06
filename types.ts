@@ -2,7 +2,7 @@ import React from 'react';
 
 export type ThemeId = 'minimal' | 'cream' | 'sketch' | 'xhs-red' | 'cherry' | 'sunset' | 'bento' | 'flowing' | 'obsidian' | 'cyber' | 'milkyway' | 'deepsea' | 'forest' | 'aurora' | 'custom';
 export type LayoutId = 'list' | 'quote' | 'dict' | 'grid' | 'sketch' | 'minimalist';
-export type AspectRatio = '1:1' | '3:4' | '4:3' | '9:16' | '16:9';
+export type AspectRatio = '3:4' | '9:16';
 export type FontSize = 'small' | 'normal' | 'large';
 export type FontId = 'font-sans-sc' | 'font-serif-sc' | 'font-handwriting' | 'font-artistic' | 'font-poster' | 'font-happy' | 'font-calligraphy';
 export type WatermarkPosition = 'none' | 'bottom-left' | 'bottom-right' | 'center';
