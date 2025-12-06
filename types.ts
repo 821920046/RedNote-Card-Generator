@@ -31,6 +31,9 @@ export interface CardState {
   textAlign: 'left' | 'center' | 'right';
   autoFontSize: boolean;
 
+  // Export Settings
+  exportEngine: 'html2canvas' | 'html-to-image';
+
   // Date
   showDate: boolean;
 }

@@ -399,25 +399,48 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, setState, isMobile, 
                 <select
                   value={state.font}
                   onChange={(e) => handleChange('font', e.target.value)}
-                  className="w-full p-2 bg-white border border-gray-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-red-100"
+                  className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-red-100"
                 >
                   {FONTS.map(f => <option key={f.id} value={f.id}>{f.name}</option>)}
                 </select>
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">字号</label>
-                <div className="flex bg-gray-100 rounded-lg p-1">
+                <div className="flex bg-gray-100 p-1 rounded-lg">
                   {[{ id: 'small', label: '小' }, { id: 'normal', label: '中' }, { id: 'large', label: '大' }].map((s) => (
                     <button
                       key={s.id}
-                      onClick={() => handleChange('fontSize', s.id)}
-                      className={`flex-1 py-1 text-xs rounded-md transition-all ${state.fontSize === s.id ? 'bg-white shadow text-gray-900 font-medium' : 'text-gray-500'}`}
+                      onClick={() => handleChange('fontSize', s.id as any)}
+                      className={`flex-1 py-1 text-xs font-medium rounded-md transition-all ${state.fontSize === s.id ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                        }`}
                     >
                       {s.label}
                     </button>
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* Export Settings */}
+            <div className="space-y-2 pt-2 border-t border-gray-100">
+              <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">导出引擎</label>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleChange('exportEngine', 'html2canvas')}
+                  className={`flex-1 py-1.5 text-xs font-medium rounded-lg border transition-all ${state.exportEngine === 'html2canvas' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+                >
+                  标准 (Fast)
+                </button>
+                <button
+                  onClick={() => handleChange('exportEngine', 'html-to-image')}
+                  className={`flex-1 py-1.5 text-xs font-medium rounded-lg border transition-all ${state.exportEngine === 'html-to-image' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+                >
+                  高清 (SVG)
+                </button>
+              </div>
+              <p className="text-[10px] text-gray-400 px-1">
+                {state.exportEngine === 'html-to-image' ? '更清晰，支持复杂样式，但速度稍慢。' : '兼容性好，速度快，适合大多数情况。'}
+              </p>
             </div>
 
             {/* Aspect Ratio */}
@@ -437,10 +460,10 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, setState, isMobile, 
                 ))}
               </div>
             </div>
-          </div>
+          </div >
         )}
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 
