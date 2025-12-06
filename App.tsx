@@ -26,10 +26,6 @@ const App: React.FC = () => {
     showQrCode: false,
     qrCodeContent: 'https://www.xiaohongshu.com',
     showDate: true,
-    // Watermark - NEW
-    watermarkText: '',
-    watermarkPosition: 'none',
-    watermarkOpacity: 0.3,
   });
 
   const [isGenerating, setIsGenerating] = useState(false);

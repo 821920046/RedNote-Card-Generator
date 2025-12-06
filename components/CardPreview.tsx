@@ -1,4 +1,5 @@
 import React, { forwardRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { CardState, ThemeConfig } from '../types';
 import { THEME_GROUPS, FONT_SIZE_MAP } from '../constants';
 import { Quote, Sparkles } from 'lucide-react';
@@ -74,7 +75,9 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
         return (
           <li key={index} className={`flex items-start mb-3 p-2 rounded-lg ${state.backgroundImage ? 'bg-white/60 backdrop-blur-sm' : ''}`}>
             <span className={`mr-2 md:mr-3 flex-shrink-0 font-extrabold ${accentClass}`} style={accentStyle}>{number}.</span>
-            <span className={`${textClass} ${sizeConfig.content} leading-relaxed`} style={textStyle}>{rest.join('. ')}</span>
+            <span className={`${textClass} ${sizeConfig.content} leading-relaxed`} style={textStyle}>
+              <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>{rest.join('. ')}</ReactMarkdown>
+            </span>
           </li>
         );
       }
@@ -84,7 +87,9 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
         return (
           <div key={index} className={`space-y-1 p-3 md:p-4 rounded-xl ${state.backgroundImage ? 'bg-white/90 backdrop-blur-md text-gray-800' : 'bg-white/10 backdrop-blur-sm border border-white/20'}`}>
             <h3 className={`font-bold ${sizeConfig.gridTitle} ${accentClass}`} style={accentStyle}>{header}</h3>
-            <p className={`${state.backgroundImage ? 'text-gray-700' : textClass} text-opacity-80 ${sizeConfig.gridPoint}`} style={state.backgroundImage ? {} : textStyle}>{rest.join('. ')}</p>
+            <div className={`${state.backgroundImage ? 'text-gray-700' : textClass} text-opacity-80 ${sizeConfig.gridPoint}`} style={state.backgroundImage ? {} : textStyle}>
+              <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>{rest.join('. ')}</ReactMarkdown>
+            </div>
           </div>
         );
       }
@@ -106,7 +111,12 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
       }
 
       // Default paragraph
-      return <p key={index} className={`${textClass} ${sizeConfig.content} mb-3 leading-relaxed whitespace-pre-wrap ${state.backgroundImage && state.layout !== 'grid' ? 'bg-white/50 p-2 rounded backdrop-blur-sm inline-block' : ''}`} style={textStyle}>{line}</p>;
+      // Default paragraph
+      return (
+        <div key={index} className={`${textClass} ${sizeConfig.content} mb-3 leading-relaxed whitespace-pre-wrap ${state.backgroundImage && state.layout !== 'grid' ? 'bg-white/50 p-2 rounded backdrop-blur-sm inline-block' : ''}`} style={textStyle}>
+          <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>{line}</ReactMarkdown>
+        </div>
+      );
     });
   };
 
@@ -148,7 +158,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
           <div className="flex flex-col justify-center items-center text-center flex-1 min-h-0 space-y-6 md:space-y-8 relative z-10">
             <Quote size={40} className={`${accentClass} opacity-80 md:w-12 md:h-12`} style={accentStyle} />
             <blockquote className={`${textClass} ${sizeConfig.quote} font-serif-sc font-bold leading-tight px-2 md:px-4 drop-shadow-sm`} style={textStyle}>
-              {state.content}
+              <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>{state.content}</ReactMarkdown>
             </blockquote>
             <p className={`text-lg md:text-xl font-artistic ${accentClass}`} style={accentStyle}>— {state.subtitle}</p>
           </div>
@@ -264,22 +274,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
           </div>
         )}
 
-        {/* Watermark - NEW */}
-        {state.watermarkText && state.watermarkPosition !== 'none' && (
-          <div
-            className={`absolute pointer-events-none z-20 text-sm font-medium ${state.watermarkPosition === 'bottom-left' ? 'bottom-4 left-4' :
-                state.watermarkPosition === 'bottom-right' ? 'bottom-4 right-4' :
-                  'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl'
-              }`}
-            style={{
-              opacity: state.watermarkOpacity,
-              color: textStyle.color || 'rgba(0,0,0,0.5)',
-              textShadow: '0 1px 2px rgba(255,255,255,0.5)'
-            }}
-          >
-            {state.watermarkText}
-          </div>
-        )}
+        {/* Watermark Removed */}
       </div>
     </div>
   );

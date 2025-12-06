@@ -5,7 +5,6 @@ export type LayoutId = 'list' | 'quote' | 'dict' | 'grid' | 'sketch' | 'minimali
 export type AspectRatio = '3:4' | '9:16';
 export type FontSize = 'small' | 'normal' | 'large';
 export type FontId = 'font-sans-sc' | 'font-serif-sc' | 'font-handwriting' | 'font-artistic' | 'font-poster' | 'font-happy' | 'font-calligraphy';
-export type WatermarkPosition = 'none' | 'bottom-left' | 'bottom-right' | 'center';
 
 export interface CardState {
   title: string;
@@ -21,17 +20,12 @@ export interface CardState {
   customAccentColor: string;
   customTextColor: string;
   customBgColor: string;
-  // Background
   backgroundImage: string | null;
   // QR Code
   showQrCode: boolean;
   qrCodeContent: string;
   // Date
   showDate: boolean;
-  // Watermark - NEW
-  watermarkText: string;
-  watermarkPosition: WatermarkPosition;
-  watermarkOpacity: number;
 }
 
 export interface ThemeConfig {

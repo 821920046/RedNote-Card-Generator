@@ -109,14 +109,17 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, setState, isMobile, 
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-gray-700">正文内容</label>
+              <label className="text-sm font-medium text-gray-700 flex justify-between items-center">
+                <span>正文内容</span>
+                <span className="text-xs font-normal text-red-500 bg-red-50 px-2 py-0.5 rounded-full">支持 Markdown</span>
+              </label>
               <textarea
                 value={state.content}
                 onChange={(e) => handleChange('content', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-400 outline-none min-h-[120px] resize-y"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-400 outline-none min-h-[120px] resize-y font-mono text-sm"
                 placeholder="输入正文，换行区分..."
               />
-              <p className="text-xs text-gray-400">提示：以数字 "1." 开头会自动变为列表样式</p>
+              <p className="text-xs text-gray-400">提示：支持 **加粗**、*斜体*，以 "1." 开头自动变列表</p>
             </div>
 
             {/* Elements Toggle */}
@@ -157,60 +160,7 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, setState, isMobile, 
                 </div>
               )}
 
-              {/* Watermark Settings - NEW */}
-              <div className="space-y-2 pt-3 border-t border-gray-100">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">水印设置</label>
-
-                <div className="space-y-2">
-                  <input
-                    type="text"
-                    value={state.watermarkText}
-                    onChange={(e) => handleChange('watermarkText', e.target.value)}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 outline-none"
-                    placeholder="水印文字（如：@你的ID）"
-                  />
-
-                  {state.watermarkText && (
-                    <div className="animate-fade-in space-y-3">
-                      <div className="flex gap-1">
-                        {[
-                          { id: 'none', label: '无' },
-                          { id: 'bottom-left', label: '左下' },
-                          { id: 'bottom-right', label: '右下' },
-                          { id: 'center', label: '居中' }
-                        ].map((pos) => (
-                          <button
-                            key={pos.id}
-                            onClick={() => handleChange('watermarkPosition', pos.id)}
-                            className={`flex-1 py-1.5 text-xs rounded-lg transition ${state.watermarkPosition === pos.id
-                                ? 'bg-red-500 text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                              }`}
-                          >
-                            {pos.label}
-                          </button>
-                        ))}
-                      </div>
-
-                      {state.watermarkPosition !== 'none' && (
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs text-gray-500">透明度</span>
-                          <input
-                            type="range"
-                            min="0.1"
-                            max="0.8"
-                            step="0.1"
-                            value={state.watermarkOpacity}
-                            onChange={(e) => handleChange('watermarkOpacity', parseFloat(e.target.value))}
-                            className="flex-1 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                          />
-                          <span className="text-xs text-gray-500 w-8">{Math.round(state.watermarkOpacity * 100)}%</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
+              {/* Watermark Settings Removed */}
             </div>
 
             <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
@@ -315,8 +265,8 @@ const ControlPanel: React.FC<ControlPanelProps> = ({ state, setState, isMobile, 
                     key={layout.id}
                     onClick={() => handleChange('layout', layout.id)}
                     className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 transition-all ${state.layout === layout.id
-                        ? 'border-red-500 bg-red-50 text-red-600'
-                        : 'border-gray-100 hover:bg-gray-50 text-gray-500'
+                      ? 'border-red-500 bg-red-50 text-red-600'
+                      : 'border-gray-100 hover:bg-gray-50 text-gray-500'
                       }`}
                   >
                     <layout.icon size={20} className="mb-1" />
