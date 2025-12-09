@@ -1,10 +1,10 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import html2canvas from 'html2canvas';
-import { toPng } from 'html-to-image';
+
 import { CardState } from './types';
 import { RATIOS } from './constants';
 import { processContent } from './utils/contentProcessor';
 import ControlPanel from './components/ControlPanel';
+import MobileDrawer from './components/MobileDrawer';
 import CardPreview from './components/CardPreview';
 import { Download, Edit2, X, Sparkles, Loader2, Share2, Check, Smartphone, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -118,12 +118,14 @@ const App: React.FC = () => {
       let dataUrl = '';
 
       if (state.exportEngine === 'html-to-image') {
+        const { toPng } = await import('html-to-image');
         dataUrl = await toPng(elementToCapture, {
           cacheBust: true,
           pixelRatio: scale,
           quality: 1.0,
         });
       } else {
+        const html2canvas = (await import('html2canvas')).default;
         const canvas = await html2canvas(elementToCapture, {
           scale: scale,
           useCORS: true,
@@ -258,28 +260,15 @@ const App: React.FC = () => {
       </div >
 
       {/* --- Mobile: Edit Drawer (Bottom Sheet) --- */}
+      {/* --- Mobile: Edit Drawer (Bottom Sheet) --- */}
       {
         isMobile && (
-          <>
-            {/* Backdrop */}
-            <div
-              className={`fixed inset-0 bg-black/60 z-40 transition-opacity duration-300 ${isMobileEditOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-              onClick={() => setIsMobileEditOpen(false)}
-            />
-            {/* Sheet */}
-            <div className={`fixed bottom-0 left-0 right-0 h-[85vh] bg-white rounded-t-[2rem] z-50 transform transition-transform duration-300 cubic-bezier(0.32, 0.72, 0, 1) shadow-2xl flex flex-col ${isMobileEditOpen ? 'translate-y-0' : 'translate-y-full'}`}>
-              {/* Handle bar for visual cue */}
-              <div className="w-full h-6 flex items-center justify-center pt-2" onClick={() => setIsMobileEditOpen(false)}>
-                <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
-              </div>
-              <ControlPanel
-                state={state}
-                setState={setState}
-                isMobile={true}
-                onClose={() => setIsMobileEditOpen(false)}
-              />
-            </div>
-          </>
+          <MobileDrawer
+            isOpen={isMobileEditOpen}
+            onClose={() => setIsMobileEditOpen(false)}
+            state={state}
+            setState={setState}
+          />
         )
       }
 
