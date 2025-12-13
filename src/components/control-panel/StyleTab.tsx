@@ -28,8 +28,8 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
             <div className="space-y-2">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">背景图片</label>
                 <div className="flex gap-2">
-                    <label className="flex-1 cursor-pointer group">
-                        <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                    <label htmlFor="input-bg-image" className="flex-1 cursor-pointer group">
+                        <input id="input-bg-image" name="backgroundImage" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                         <div className="h-20 border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-500 hover:border-red-400 hover:text-red-500 transition hover:bg-red-50">
                             <ImageIcon size={20} className="mb-1" />
                             <span className="text-xs">上传图片</span>
@@ -117,8 +117,8 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">微调排版</label>
                     <div className="flex items-center gap-2">
                         <span className="text-xs text-gray-400">智能字号</span>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" checked={state.autoFontSize} onChange={(e) => handleChange('autoFontSize', e.target.checked)} className="sr-only peer" />
+                        <label htmlFor="toggle-auto-fontsize" className="relative inline-flex items-center cursor-pointer">
+                            <input id="toggle-auto-fontsize" name="autoFontSize" type="checkbox" checked={state.autoFontSize} onChange={(e) => handleChange('autoFontSize', e.target.checked)} className="sr-only peer" />
                             <div className="w-8 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-red-500"></div>
                         </label>
                     </div>
@@ -126,8 +126,10 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
 
                 <div className="space-y-3">
                     <div className="flex items-center gap-3">
-                        <span className="text-xs text-gray-500 w-12 text-right">行高</span>
+                        <label htmlFor="input-line-height" className="text-xs text-gray-500 w-12 text-right">行高</label>
                         <input
+                            id="input-line-height"
+                            name="lineHeight"
                             type="range"
                             min="1.0"
                             max="2.5"
@@ -140,8 +142,10 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <span className="text-xs text-gray-500 w-12 text-right">间距</span>
+                        <label htmlFor="input-letter-spacing" className="text-xs text-gray-500 w-12 text-right">间距</label>
                         <input
+                            id="input-letter-spacing"
+                            name="letterSpacing"
                             type="range"
                             min="-2"
                             max="10"
@@ -154,8 +158,10 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <span className="text-xs text-gray-500 w-12 text-right">段后</span>
+                        <label htmlFor="input-paragraph-spacing" className="text-xs text-gray-500 w-12 text-right">段后</label>
                         <input
+                            id="input-paragraph-spacing"
+                            name="paragraphSpacing"
                             type="range"
                             min="0"
                             max="40"
@@ -186,16 +192,16 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
             {state.theme === 'custom' && (
                 <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 space-y-3">
                     <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">背景色</span>
-                        <input type="color" value={state.customBgColor} onChange={e => handleChange('customBgColor', e.target.value)} className="h-8 w-12 rounded cursor-pointer" />
+                        <label htmlFor="input-custom-bgcolor" className="text-sm text-gray-600">背景色</label>
+                        <input id="input-custom-bgcolor" name="customBgColor" type="color" value={state.customBgColor} onChange={e => handleChange('customBgColor', e.target.value)} className="h-8 w-12 rounded cursor-pointer" />
                     </div>
                     <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">文字色</span>
-                        <input type="color" value={state.customTextColor} onChange={e => handleChange('customTextColor', e.target.value)} className="h-8 w-12 rounded cursor-pointer" />
+                        <label htmlFor="input-custom-textcolor" className="text-sm text-gray-600">文字色</label>
+                        <input id="input-custom-textcolor" name="customTextColor" type="color" value={state.customTextColor} onChange={e => handleChange('customTextColor', e.target.value)} className="h-8 w-12 rounded cursor-pointer" />
                     </div>
                     <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">装饰色</span>
-                        <input type="color" value={state.customAccentColor} onChange={e => handleChange('customAccentColor', e.target.value)} className="h-8 w-12 rounded cursor-pointer" />
+                        <label htmlFor="input-custom-accentcolor" className="text-sm text-gray-600">装饰色</label>
+                        <input id="input-custom-accentcolor" name="customAccentColor" type="color" value={state.customAccentColor} onChange={e => handleChange('customAccentColor', e.target.value)} className="h-8 w-12 rounded cursor-pointer" />
                     </div>
                 </div>
             )}
@@ -203,8 +209,10 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
             {/* Font & Size */}
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">字体</label>
+                    <label htmlFor="select-font" className="text-xs font-bold text-gray-400 uppercase tracking-wider">字体</label>
                     <select
+                        id="select-font"
+                        name="font"
                         value={state.font}
                         onChange={(e) => handleChange('font', e.target.value)}
                         className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm bg-white outline-none focus:ring-2 focus:ring-red-100"

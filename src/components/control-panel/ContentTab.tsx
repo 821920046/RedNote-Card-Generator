@@ -37,8 +37,10 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
             </div>
 
             <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">主标题</label>
+                <label htmlFor="input-title" className="text-sm font-medium text-gray-700">主标题</label>
                 <input
+                    id="input-title"
+                    name="title"
                     type="text"
                     value={state.title}
                     onChange={(e) => handleChange('title', e.target.value)}
@@ -48,8 +50,10 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
             </div>
 
             <div className="space-y-1">
-                <label className="text-sm font-medium text-gray-700">副标题 / Slogan</label>
+                <label htmlFor="input-subtitle" className="text-sm font-medium text-gray-700">副标题 / Slogan</label>
                 <input
+                    id="input-subtitle"
+                    name="subtitle"
                     type="text"
                     value={state.subtitle}
                     onChange={(e) => handleChange('subtitle', e.target.value)}
@@ -60,7 +64,7 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
 
             <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                    <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <label htmlFor="input-content" className="text-sm font-medium text-gray-700 flex items-center gap-2">
                         <span>正文内容</span>
                         <span className="text-xs font-normal text-red-500 bg-red-50 px-2 py-0.5 rounded-full">支持 Markdown</span>
                     </label>
@@ -76,6 +80,8 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                     </button>
                 </div>
                 <textarea
+                    id="input-content"
+                    name="content"
                     value={state.content}
                     onChange={(e) => handleChange('content', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 focus:border-red-400 outline-none min-h-[120px] resize-y font-mono text-sm"
@@ -93,8 +99,8 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                         <span>✨</span>
                         <span>自动插入 Emoji</span>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" checked={state.autoEmoji} onChange={(e) => handleChange('autoEmoji', e.target.checked)} className="sr-only peer" />
+                    <label htmlFor="toggle-auto-emoji" className="relative inline-flex items-center cursor-pointer">
+                        <input id="toggle-auto-emoji" name="autoEmoji" type="checkbox" checked={state.autoEmoji} onChange={(e) => handleChange('autoEmoji', e.target.checked)} className="sr-only peer" />
                         <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
                     </label>
                 </div>
@@ -104,8 +110,8 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                         <span>📄</span>
                         <span>自动分页</span>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" checked={state.autoPaginate} onChange={(e) => handleChange('autoPaginate', e.target.checked)} className="sr-only peer" />
+                    <label htmlFor="toggle-auto-paginate" className="relative inline-flex items-center cursor-pointer">
+                        <input id="toggle-auto-paginate" name="autoPaginate" type="checkbox" checked={state.autoPaginate} onChange={(e) => handleChange('autoPaginate', e.target.checked)} className="sr-only peer" />
                         <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
                     </label>
                 </div>
@@ -123,8 +129,8 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                         <Calendar size={16} />
                         <span>日期日签</span>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" checked={state.showDate} onChange={(e) => handleChange('showDate', e.target.checked)} className="sr-only peer" />
+                    <label htmlFor="toggle-show-date" className="relative inline-flex items-center cursor-pointer">
+                        <input id="toggle-show-date" name="showDate" type="checkbox" checked={state.showDate} onChange={(e) => handleChange('showDate', e.target.checked)} className="sr-only peer" />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
                     </label>
                 </div>
@@ -134,8 +140,8 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                         <QrCode size={16} />
                         <span>二维码</span>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" checked={state.showQrCode} onChange={(e) => handleChange('showQrCode', e.target.checked)} className="sr-only peer" />
+                    <label htmlFor="toggle-show-qrcode" className="relative inline-flex items-center cursor-pointer">
+                        <input id="toggle-show-qrcode" name="showQrCode" type="checkbox" checked={state.showQrCode} onChange={(e) => handleChange('showQrCode', e.target.checked)} className="sr-only peer" />
                         <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
                     </label>
                 </div>
@@ -143,11 +149,14 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                 {state.showQrCode && (
                     <div className="animate-fade-in pl-6">
                         <input
+                            id="input-qrcode-content"
+                            name="qrCodeContent"
                             type="text"
                             value={state.qrCodeContent}
                             onChange={(e) => handleChange('qrCodeContent', e.target.value)}
                             className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 outline-none"
                             placeholder="二维码链接或内容"
+                            aria-label="二维码内容"
                         />
                     </div>
                 )}
@@ -155,8 +164,10 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
 
             <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
                 <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">作者</label>
+                    <label htmlFor="input-author" className="text-sm font-medium text-gray-700">作者</label>
                     <input
+                        id="input-author"
+                        name="author"
                         type="text"
                         value={state.author}
                         onChange={(e) => handleChange('author', e.target.value)}
@@ -164,8 +175,10 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                     />
                 </div>
                 <div className="space-y-1">
-                    <label className="text-sm font-medium text-gray-700">标签</label>
+                    <label htmlFor="input-tag" className="text-sm font-medium text-gray-700">标签</label>
                     <input
+                        id="input-tag"
+                        name="tag"
                         type="text"
                         value={state.tag}
                         onChange={(e) => handleChange('tag', e.target.value)}

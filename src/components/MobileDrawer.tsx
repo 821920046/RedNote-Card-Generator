@@ -42,7 +42,12 @@ const MobileDrawer: React.FC<MobileDrawerProps> = ({ isOpen, onClose, state, set
                 onClick={onClose}
             />
             {/* Sheet */}
-            <div className={`fixed bottom-0 left-0 right-0 h-[85vh] bg-white rounded-t-[2rem] z-50 transform transition-transform duration-300 cubic-bezier(0.32, 0.72, 0, 1) shadow-2xl flex flex-col ${isOpen ? 'translate-y-0' : 'translate-y-full'}`}>
+            <div
+                role="dialog"
+                aria-modal="true"
+                aria-label="编辑面板"
+                className={`fixed bottom-0 left-0 right-0 h-[85vh] bg-white rounded-t-[2rem] z-50 transform transition-transform duration-300 cubic-bezier(0.32, 0.72, 0, 1) shadow-2xl flex flex-col ${isOpen ? 'translate-y-0' : 'translate-y-full'}`}
+            >
                 {/* Handle bar for visual cue */}
                 <div className="w-full h-6 flex items-center justify-center pt-2" onClick={onClose}>
                     <div className="w-12 h-1.5 bg-gray-300 rounded-full"></div>
