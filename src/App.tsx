@@ -35,6 +35,7 @@ const App: React.FC = () => {
     autoEmoji: false,
     autoPaginate: false,
     exportEngine: 'html2canvas',
+    exportFormat: 'png',
   });
 
   // Load draft from localStorage on mount
@@ -59,6 +60,8 @@ const App: React.FC = () => {
   }, [state]);
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const [exportProgress, setExportProgress] = useState<number | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isMobileEditOpen, setIsMobileEditOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -92,30 +95,32 @@ const App: React.FC = () => {
     if (isGenerating || !cardRef.current) return;
     setIsGenerating(true);
     setGeneratedImage(null);
+    setExportError(null);
+    setExportProgress(5);
 
     try {
       // 1. Get the actual content div
       await new Promise(resolve => setTimeout(resolve, 50));
+      setExportProgress(15);
       const elementToCapture = cardRef.current.querySelector('#capture-target') as HTMLElement;
       if (!elementToCapture) throw new Error("Capture target not found");
 
       // 2. Wait for fonts
       if (document.fonts) await document.fonts.ready;
+      setExportProgress(30);
       await new Promise(resolve => setTimeout(resolve, 200));
 
       // 3. Determine Scale based on DPR
       const scale = isMobile ? 3 : 3;
       let dataUrl = '';
 
-      if (state.exportEngine === 'html-to-image') {
+      if (state.exportEngine === 'html-to-image' && state.exportFormat === 'png') {
         const { toPng } = await import('html-to-image');
-        dataUrl = await toPng(elementToCapture, {
-          cacheBust: true,
-          pixelRatio: scale,
-          quality: 1.0,
-        });
+        setExportProgress(60);
+        dataUrl = await toPng(elementToCapture, { cacheBust: true, pixelRatio: scale, quality: 1.0 });
       } else {
         const html2canvas = (await import('html2canvas')).default;
+        setExportProgress(60);
         const canvas = await html2canvas(elementToCapture, {
           scale: scale,
           useCORS: true,
@@ -133,25 +138,43 @@ const App: React.FC = () => {
             }
           }
         });
-        dataUrl = canvas.toDataURL('image/png', 1.0);
+        if (state.exportFormat === 'webp') {
+          dataUrl = canvas.toDataURL('image/webp', 0.95);
+        } else {
+          dataUrl = canvas.toDataURL('image/png', 1.0);
+        }
+        if (state.exportFormat === 'pdf') {
+          const { jsPDF } = await import('jspdf');
+          const pdf = new jsPDF({
+            orientation: 'portrait',
+            unit: 'px',
+            format: [canvas.width, canvas.height]
+          });
+          pdf.addImage(dataUrl, 'PNG', 0, 0, canvas.width, canvas.height);
+          pdf.save(`xhs-card-p${currentSlide + 1}-${Date.now()}.pdf`);
+          setExportProgress(100);
+          setIsGenerating(false);
+          return;
+        }
       }
 
       // 4. Output
       setGeneratedImage(dataUrl);
+      setExportProgress(100);
 
       // Desktop: auto download
       if (!isMobile) {
         const link = document.createElement('a');
         link.href = dataUrl;
-        link.download = `xhs-card-p${currentSlide + 1}-${Date.now()}.png`;
+        link.download = `xhs-card-p${currentSlide + 1}-${Date.now()}.${state.exportFormat === 'webp' ? 'webp' : 'png'}`;
         link.click();
       }
 
     } catch (error) {
-      console.error('Generation failed:', error);
-      alert('生成图片失败，请重试或刷新页面');
+      setExportError('生成失败，请重试');
     } finally {
       setIsGenerating(false);
+      setTimeout(() => setExportProgress(null), 500);
     }
   };
 
@@ -181,7 +204,7 @@ const App: React.FC = () => {
             className="flex items-center gap-2 px-6 py-2.5 bg-gray-900 hover:bg-black text-white rounded-full font-bold shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 active:scale-95"
           >
             {isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Download size={20} />}
-            {isGenerating ? '生成中...' : '下载图片'}
+            {isGenerating ? `生成中 ${exportProgress ?? 0}%` : '下载图片'}
           </button>
         </div >
 
@@ -264,25 +287,25 @@ const App: React.FC = () => {
 
       {/* --- Generated Image Modal (Mobile Optimized) --- */}
       {
-        generatedImage && (
+        (generatedImage || exportError) && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-md p-6 animate-fade-in">
             <div className="relative w-full max-w-sm flex flex-col items-center">
               <div className="absolute -top-12 right-0">
-                <button onClick={() => setGeneratedImage(null)} className="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition">
+                <button onClick={() => { setGeneratedImage(null); setExportError(null); }} className="p-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition">
                   <X size={24} />
                 </button>
               </div>
 
               {/* Image Container */}
               <div className="bg-gray-800 p-1 rounded-2xl shadow-2xl w-full overflow-hidden border border-gray-700">
-                <img src={generatedImage} alt="Generated Card" className="w-full h-auto rounded-xl block" />
+                <img src={generatedImage!} alt="Generated Card" className="w-full h-auto rounded-xl block" />
               </div>
 
               {/* Action / Hint Area */}
               <div className="mt-8 text-center space-y-5 w-full">
                 <div className="inline-flex items-center gap-2 text-green-400 font-medium bg-green-950/50 py-2 px-5 rounded-full border border-green-800/50">
                   <Check size={16} />
-                  <span>图片生成成功</span>
+                  <span>{exportError ? '生成失败' : '图片生成成功'}</span>
                 </div>
 
                 {isMobile ? (
@@ -292,7 +315,7 @@ const App: React.FC = () => {
                       <span>长按上方图片保存到相册</span>
                     </p>
 
-                    {navigator.share && (
+                    {generatedImage && navigator.share && (
                       <button
                         onClick={() => {
                           fetch(generatedImage).then(res => res.blob()).then(blob => {
@@ -309,16 +332,36 @@ const App: React.FC = () => {
                         调用系统分享
                       </button>
                     )}
+                    {exportError && (
+                      <button
+                        onClick={handleDownload}
+                        className="w-full py-3.5 bg-red-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-700 transition shadow-lg"
+                      >
+                        重试
+                      </button>
+                    )}
                   </div>
                 ) : (
-                  <a
-                    href={generatedImage}
-                    download={`xhs-card-${Date.now()}.png`}
-                    className="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition"
-                  >
-                    <Download size={20} />
-                    下载到本地
-                  </a>
+                  <>
+                    {generatedImage && (
+                      <a
+                        href={generatedImage}
+                        download={`xhs-card-${Date.now()}.${state.exportFormat === 'webp' ? 'webp' : 'png'}`}
+                        className="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition"
+                      >
+                        <Download size={20} />
+                        下载到本地
+                      </a>
+                    )}
+                    {exportError && (
+                      <button
+                        onClick={handleDownload}
+                        className="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition"
+                      >
+                        重试
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
             </div>

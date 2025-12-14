@@ -257,6 +257,29 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
                 <p className="text-[10px] text-gray-400 px-1">
                     {state.exportEngine === 'html-to-image' ? '更清晰，支持复杂样式，但速度稍慢。' : '兼容性好，速度快，适合大多数情况。'}
                 </p>
+                <div className="space-y-2">
+                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">导出格式</label>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => handleChange('exportFormat', 'png')}
+                            className={`flex-1 py-1.5 text-xs font-medium rounded-lg border transition-all ${state.exportFormat === 'png' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            PNG
+                        </button>
+                        <button
+                            onClick={() => handleChange('exportFormat', 'webp')}
+                            className={`flex-1 py-1.5 text-xs font-medium rounded-lg border transition-all ${state.exportFormat === 'webp' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            WebP
+                        </button>
+                        <button
+                            onClick={() => handleChange('exportFormat', 'pdf')}
+                            className={`flex-1 py-1.5 text-xs font-medium rounded-lg border transition-all ${state.exportFormat === 'pdf' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            PDF
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {/* Aspect Ratio */}

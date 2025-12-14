@@ -35,6 +35,7 @@ export interface CardState {
 
   // Export Settings
   exportEngine: 'html2canvas' | 'html-to-image';
+  exportFormat: 'png' | 'webp' | 'pdf';
 
   // Date
   showDate: boolean;
