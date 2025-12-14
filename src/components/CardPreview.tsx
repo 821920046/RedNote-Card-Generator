@@ -176,7 +176,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
               <p className={`${accentClass} ${sizeConfig.subtitle} font-light tracking-wider opacity-80`} style={accentStyle}>{state.subtitle}</p>
               <div className={`h-1.5 w-16 md:w-20 rounded-full ${accentClass}`} style={{ backgroundColor: accentStyle.color, ...accentStyle }}></div>
             </div>
-            <ul className="flex-grow overflow-hidden">
+            <ul id="content-area" className="flex-grow overflow-hidden">
               {renderContent()}
             </ul>
           </div>
@@ -200,7 +200,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
               <p className={`text-lg font-artistic opacity-80 mb-2 ${accentClass}`} style={accentStyle}>{state.subtitle || 'Definition'}</p>
               <h1 className={`${textClass} ${sizeConfig.dict} font-extrabold leading-none`} style={textStyle}>{state.title}</h1>
             </div>
-            <div className={`flex-grow p-4 md:p-6 rounded-lg border-l-4 ${themeConfig.border || 'border-gray-200'} overflow-hidden ${state.backgroundImage ? 'bg-white/90 backdrop-blur-md shadow-lg' : 'bg-white/5'}`} style={{ borderLeftColor: accentStyle.color }}>
+            <div id="content-area" className={`flex-grow p-4 md:p-6 rounded-lg border-l-4 ${themeConfig.border || 'border-gray-200'} overflow-hidden ${state.backgroundImage ? 'bg-white/90 backdrop-blur-md shadow-lg' : 'bg-white/5'}`} style={{ borderLeftColor: accentStyle.color }}>
               {renderContent()}
             </div>
           </div>
@@ -213,7 +213,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
               <h1 className={`${textClass} ${sizeConfig.title} font-extrabold leading-tight drop-shadow-sm`} style={textStyle}>{state.title}</h1>
               <p className={`${accentClass} ${sizeConfig.subtitle} opacity-70 mt-2 bg-white/30 rounded inline-block px-2`} style={accentStyle}>{state.subtitle}</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 flex-grow content-start overflow-hidden">
+            <div id="content-area" className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 flex-grow content-start overflow-hidden">
               {renderContent()}
             </div>
           </div>
@@ -228,7 +228,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
                 {state.title}
               </h1>
             </div>
-            <div className="flex-grow space-y-3 md:space-y-4 pl-4 md:pl-6 border-l-2 border-dashed border-opacity-50 overflow-hidden" style={{ borderColor: accentStyle.color || 'currentColor' }}>
+            <div id="content-area" className="flex-grow space-y-3 md:space-y-4 pl-4 md:pl-6 border-l-2 border-dashed border-opacity-50 overflow-hidden" style={{ borderColor: accentStyle.color || 'currentColor' }}>
               {renderContent()}
             </div>
             <p className={`mt-4 md:mt-6 text-sm italic font-handwriting text-right opacity-70 shrink-0 ${accentClass}`} style={accentStyle}>—— {state.subtitle}</p>
@@ -243,7 +243,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
               <h1 className={`${textClass} ${sizeConfig.minimalistTitle} font-serif-sc font-thin leading-tight drop-shadow-sm`} style={textStyle}>{state.title}</h1>
             </div>
             <div className="flex-grow flex items-center justify-center text-center px-4 md:px-8 overflow-hidden">
-              <div className={`max-w-md w-full ${state.backgroundImage ? 'bg-white/80 p-6 shadow-xl backdrop-blur-md' : ''}`}>
+              <div id="content-area" className={`max-w-md w-full ${state.backgroundImage ? 'bg-white/80 p-6 shadow-xl backdrop-blur-md' : ''}`}>
                 {renderContent()}
               </div>
             </div>

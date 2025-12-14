@@ -5,6 +5,7 @@ import ControlPanel from './components/ControlPanel';
 import MobileDrawer from './components/MobileDrawer';
 import CardPreview from './components/CardPreview';
 import { Download, Edit2, X, Sparkles, Loader2, Share2, Check, Smartphone, ChevronLeft, ChevronRight } from 'lucide-react';
+import { insertEmojis, applyPaginationRules } from './utils/contentProcessor';
 
 const App: React.FC = () => {
   // --- State ---
@@ -65,12 +66,15 @@ const App: React.FC = () => {
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const [isMobileEditOpen, setIsMobileEditOpen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [measureContent, setMeasureContent] = useState<string>('');
+  const [autoSlides, setAutoSlides] = useState<string[] | null>(null);
 
   // --- Pagination Logic ---
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Split content by divider '==='
-  const slides = state.content.split(/\n={3,}\n/).map(s => s.trim());
+  const manualSlides = state.content.split(/\n={3,}\n/).map(s => s.trim());
+  const slides = state.autoPaginate ? (autoSlides ?? manualSlides) : manualSlides;
 
   // Reset current slide if out of bounds (e.g. after editing)
   useEffect(() => {
@@ -89,6 +93,75 @@ const App: React.FC = () => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    const shouldPaginate = state.autoPaginate && ['quote'].indexOf(state.layout) === -1;
+    if (!shouldPaginate) {
+      setAutoSlides(null);
+      return;
+    }
+    let mounted = true;
+    const compute = async () => {
+      await new Promise(r => setTimeout(r, 0));
+      if (document.fonts) await document.fonts.ready;
+      await new Promise(r => setTimeout(r, 0));
+      const measureArea = measureRef.current?.querySelector('#content-area') as HTMLElement | null;
+      if (!measureArea) {
+        setAutoSlides(null);
+        return;
+      }
+      const limit = measureArea.clientHeight;
+      let sourceContent = state.content;
+      if (state.autoEmoji) {
+        sourceContent = insertEmojis(sourceContent);
+      }
+      let lines = sourceContent.split('\n');
+      lines = applyPaginationRules(lines, state.layout);
+      const pages: string[] = [];
+      let start = 0;
+      while (start < lines.length) {
+        let low = 1;
+        let high = lines.length - start;
+        let fit = 1;
+        while (low <= high) {
+          const mid = Math.floor((low + high) / 2);
+          setMeasureContent(lines.slice(start, start + mid).join('\n'));
+          await new Promise(r => setTimeout(r, 0));
+          const area = measureRef.current?.querySelector('#content-area') as HTMLElement | null;
+          if (!area) break;
+          const h = area.scrollHeight;
+          if (h <= limit) {
+            fit = mid;
+            low = mid + 1;
+          } else {
+            high = mid - 1;
+          }
+        }
+        const pageText = lines.slice(start, start + fit).join('\n').trim();
+        if (pageText) pages.push(pageText);
+        start += fit;
+      }
+      if (mounted) setAutoSlides(pages);
+    };
+    compute();
+    return () => { mounted = false; };
+  }, [
+    state.autoPaginate,
+    state.content,
+    state.layout,
+    state.font,
+    state.fontSize,
+    state.lineHeight,
+    state.letterSpacing,
+    state.paragraphSpacing,
+    state.textAlign,
+    state.aspectRatio,
+    state.theme,
+    state.backgroundImage,
+    state.title,
+    state.subtitle,
+    isMobile
+  ]);
 
   // --- Image Generation Logic ---
   const handleDownload = async () => {
@@ -225,6 +298,19 @@ const App: React.FC = () => {
           >
             <CardPreview ref={cardRef} state={{ ...state, content: currentContent }} />
           </div >
+          <div style={{ position: 'fixed', left: '-9999px', top: '-9999px', opacity: 0, pointerEvents: 'none' }}>
+            <div
+              className="relative"
+              style={{
+                aspectRatio: `${ratioConfig.value}`,
+                height: isMobile ? 'auto' : '85vh',
+                width: isMobile ? '85%' : 'auto',
+                maxHeight: isMobile ? '70vh' : 'none',
+              }}
+            >
+              <CardPreview ref={measureRef} state={{ ...state, content: measureContent }} />
+            </div>
+          </div>
 
           {/* Pagination Controls */}
           {

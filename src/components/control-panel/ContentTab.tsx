@@ -116,7 +116,7 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                     </label>
                 </div>
                 <p className="text-[10px] text-gray-400">
-                    {state.autoPaginate ? `当前比例 ${state.aspectRatio}：超出字数自动分页` : '关闭时需手动插入 === 分隔符'}
+                    {state.autoPaginate ? `当前比例 ${state.aspectRatio}：基于渲染高度自动分页` : '关闭时需手动插入 === 分隔符'}
                 </p>
             </div>
 

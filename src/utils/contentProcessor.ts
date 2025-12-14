@@ -4,7 +4,7 @@
  * - Smart emoji insertion
  */
 
-import { AspectRatio } from '../types';
+import { AspectRatio, LayoutId } from '../types';
 
 // Character limits per page based on aspect ratio
 // These are approximate values that work well with typical font sizes
@@ -165,4 +165,8 @@ export function processContent(content: string, aspectRatio: AspectRatio, addEmo
 
     // Step 3: Join with separator
     return pages.join('\n\n===\n\n');
+}
+
+export function applyPaginationRules(lines: string[], layout: LayoutId): string[] {
+    return lines;
 }
