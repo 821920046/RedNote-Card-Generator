@@ -171,29 +171,43 @@ const App: React.FC = () => {
       }
       let lines = sourceContent.split('\n');
       lines = applyPaginationRules(lines, state.layout);
-      const pages: string[] = [];
-      let start = 0;
-      while (start < lines.length) {
-        let low = 1;
-        let high = lines.length - start;
-        let fit = 1;
-        while (low <= high) {
-          const mid = Math.floor((low + high) / 2);
-          setMeasureContent(lines.slice(start, start + mid).join('\n'));
-          await new Promise(r => setTimeout(r, 0));
-          const area = measureRef.current?.querySelector('#content-area') as HTMLElement | null;
-          if (!area) break;
-          const h = area.scrollHeight;
-          if (h <= limit) {
-            fit = mid;
-            low = mid + 1;
-          } else {
-            high = mid - 1;
-          }
+      const segments: string[][] = [];
+      let current: string[] = [];
+      for (const ln of lines) {
+        if (ln.trim() === '===') {
+          segments.push(current);
+          current = [];
+          continue;
         }
-        const pageText = lines.slice(start, start + fit).join('\n').trim();
-        if (pageText) pages.push(pageText);
-        start += fit;
+        current.push(ln);
+      }
+      segments.push(current);
+
+      const pages: string[] = [];
+      for (const seg of segments) {
+        let start = 0;
+        while (start < seg.length) {
+          let low = 1;
+          let high = seg.length - start;
+          let fit = 1;
+          while (low <= high) {
+            const mid = Math.floor((low + high) / 2);
+            setMeasureContent(seg.slice(start, start + mid).join('\n'));
+            await new Promise(r => setTimeout(r, 0));
+            const area = measureRef.current?.querySelector('#content-area') as HTMLElement | null;
+            if (!area) break;
+            const h = area.scrollHeight;
+            if (h <= limit) {
+              fit = mid;
+              low = mid + 1;
+            } else {
+              high = mid - 1;
+            }
+          }
+          const pageText = seg.slice(start, start + fit).join('\n').trim();
+          if (pageText) pages.push(pageText);
+          start += fit;
+        }
       }
       if (mounted) setAutoSlides(pages);
     };

@@ -168,5 +168,61 @@ export function processContent(content: string, aspectRatio: AspectRatio, addEmo
 }
 
 export function applyPaginationRules(lines: string[], layout: LayoutId): string[] {
-    return lines;
+    const result: string[] = [];
+    const isBullet = (s: string) => {
+        const t = s.trim();
+        return /^(-|\*|\d+\.|[一二三四五六七八九十]\.)\s+/.test(t);
+    };
+    const isIndented = (s: string) => /^\s{2,}\S/.test(s);
+    let i = 0;
+    while (i < lines.length) {
+        const line = lines[i];
+        const trimmed = line.trim();
+        // Preserve explicit page break markers as standalone lines
+        if (trimmed === '===') {
+            result.push('===');
+            i += 1;
+            continue;
+        }
+        // Title layout: keep header with its first paragraph
+        if (layout === 'minimalist' && /^#{1,6}\s+/.test(trimmed)) {
+            let block = [line];
+            let j = i + 1;
+            while (j < lines.length) {
+                const next = lines[j].trim();
+                if (!next) { block.push(lines[j]); j += 1; continue; }
+                if (/^#{1,6}\s+/.test(next) || isBullet(next) || next === '===') break;
+                block.push(lines[j]);
+                j += 1;
+                break;
+            }
+            result.push(block.join('\n'));
+            i = j;
+            continue;
+        }
+        // List layout: merge indented continuation lines with the bullet
+        if (layout === 'list' && isBullet(trimmed)) {
+            let block = [line];
+            let j = i + 1;
+            while (j < lines.length) {
+                const nextLine = lines[j];
+                const nextTrim = nextLine.trim();
+                if (!nextTrim) { block.push(nextLine); j += 1; continue; }
+                if (isIndented(nextLine)) {
+                    block.push(nextLine);
+                    j += 1;
+                    continue;
+                }
+                if (isBullet(nextTrim) || /^#{1,6}\s+/.test(nextTrim) || nextTrim === '===') break;
+                break;
+            }
+            result.push(block.join('\n'));
+            i = j;
+            continue;
+        }
+        // Default: push line
+        result.push(line);
+        i += 1;
+    }
+    return result;
 }

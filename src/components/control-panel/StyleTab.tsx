@@ -243,20 +243,20 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-700">显示 Logo</span>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" checked={state.showLogo} onChange={(e) => handleChange('showLogo', e.target.checked)} className="sr-only peer" />
+                        <label htmlFor="toggle-show-logo" className="relative inline-flex items-center cursor-pointer">
+                            <input id="toggle-show-logo" name="showLogo" type="checkbox" checked={state.showLogo} onChange={(e) => handleChange('showLogo', e.target.checked)} className="sr-only peer" />
                             <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
                         </label>
                     </div>
                     {state.showLogo && (
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1">
-                                <label className="text-xs text-gray-500">Logo 地址</label>
-                                <input type="text" value={state.logoUrl} onChange={(e) => handleChange('logoUrl', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm" placeholder="https://..." />
+                                <label htmlFor="input-logo-url" className="text-xs text-gray-500">Logo 地址</label>
+                                <input id="input-logo-url" name="logoUrl" type="text" value={state.logoUrl} onChange={(e) => handleChange('logoUrl', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm" placeholder="https://..." />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs text-gray-500">位置</label>
-                                <select value={state.logoPosition} onChange={(e) => handleChange('logoPosition', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm">
+                                <label htmlFor="select-logo-position" className="text-xs text-gray-500">位置</label>
+                                <select id="select-logo-position" name="logoPosition" value={state.logoPosition} onChange={(e) => handleChange('logoPosition', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm">
                                     <option value="top-left">左上</option>
                                     <option value="top-right">右上</option>
                                     <option value="bottom-left">左下</option>
@@ -264,12 +264,12 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
                                 </select>
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs text-gray-500">大小</label>
-                                <input type="range" min={24} max={128} step={4} value={state.logoSize} onChange={(e) => handleChange('logoSize', parseInt(e.target.value))} className="w-full" />
+                                <label htmlFor="input-logo-size" className="text-xs text-gray-500">大小</label>
+                                <input id="input-logo-size" name="logoSize" type="range" min={24} max={128} step={4} value={state.logoSize} onChange={(e) => handleChange('logoSize', parseInt(e.target.value))} className="w-full" />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs text-gray-500">不透明度</label>
-                                <input type="range" min={0.1} max={1} step={0.05} value={state.logoOpacity} onChange={(e) => handleChange('logoOpacity', parseFloat(e.target.value))} className="w-full" />
+                                <label htmlFor="input-logo-opacity" className="text-xs text-gray-500">不透明度</label>
+                                <input id="input-logo-opacity" name="logoOpacity" type="range" min={0.1} max={1} step={0.05} value={state.logoOpacity} onChange={(e) => handleChange('logoOpacity', parseFloat(e.target.value))} className="w-full" />
                             </div>
                         </div>
                     )}
@@ -277,20 +277,20 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-700">显示水印</span>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" checked={state.showWatermark} onChange={(e) => handleChange('showWatermark', e.target.checked)} className="sr-only peer" />
+                        <label htmlFor="toggle-show-watermark" className="relative inline-flex items-center cursor-pointer">
+                            <input id="toggle-show-watermark" name="showWatermark" type="checkbox" checked={state.showWatermark} onChange={(e) => handleChange('showWatermark', e.target.checked)} className="sr-only peer" />
                             <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
                         </label>
                     </div>
                     {state.showWatermark && (
                         <div className="grid grid-cols-2 gap-3">
                             <div className="space-y-1">
-                                <label className="text-xs text-gray-500">水印文本</label>
-                                <input type="text" value={state.watermarkText} onChange={(e) => handleChange('watermarkText', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm" placeholder="RedNote" />
+                                <label htmlFor="input-watermark-text" className="text-xs text-gray-500">水印文本</label>
+                                <input id="input-watermark-text" name="watermarkText" type="text" value={state.watermarkText} onChange={(e) => handleChange('watermarkText', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm" placeholder="RedNote" />
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs text-gray-500">位置</label>
-                                <select value={state.watermarkPosition} onChange={(e) => handleChange('watermarkPosition', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm">
+                                <label htmlFor="select-watermark-position" className="text-xs text-gray-500">位置</label>
+                                <select id="select-watermark-position" name="watermarkPosition" value={state.watermarkPosition} onChange={(e) => handleChange('watermarkPosition', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm">
                                     <option value="center">居中</option>
                                     <option value="top-left">左上</option>
                                     <option value="top-right">右上</option>
@@ -299,8 +299,8 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
                                 </select>
                             </div>
                             <div className="space-y-1">
-                                <label className="text-xs text-gray-500">不透明度</label>
-                                <input type="range" min={0.05} max={1} step={0.05} value={state.watermarkOpacity} onChange={(e) => handleChange('watermarkOpacity', parseFloat(e.target.value))} className="w-full" />
+                                <label htmlFor="input-watermark-opacity" className="text-xs text-gray-500">不透明度</label>
+                                <input id="input-watermark-opacity" name="watermarkOpacity" type="range" min={0.05} max={1} step={0.05} value={state.watermarkOpacity} onChange={(e) => handleChange('watermarkOpacity', parseFloat(e.target.value))} className="w-full" />
                             </div>
                         </div>
                     )}
