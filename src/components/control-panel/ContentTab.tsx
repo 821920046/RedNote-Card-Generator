@@ -14,7 +14,7 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
     return (
         <div className="space-y-5 animate-fade-in">
             {/* Presets - Quick Start */}
-            <div className="space-y-2">
+            <div className="space-y-2 p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
                 <div className="flex justify-between items-center">
                     <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">快速模版</label>
                     <button onClick={onReset} className="text-xs text-gray-400 hover:text-red-500 flex items-center gap-1 transition">
@@ -36,7 +36,7 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                 </div>
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-2 p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
                 <label htmlFor="input-title" className="text-sm font-medium text-gray-700">主标题</label>
                 <input
                     id="input-title"
@@ -49,7 +49,7 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                 />
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-2 p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
                 <label htmlFor="input-subtitle" className="text-sm font-medium text-gray-700">副标题 / Slogan</label>
                 <input
                     id="input-subtitle"
@@ -62,7 +62,7 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                 />
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-2 p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
                 <div className="flex justify-between items-center">
                     <label htmlFor="input-content" className="text-sm font-medium text-gray-700 flex items-center gap-2">
                         <span>正文内容</span>
@@ -91,7 +91,7 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
             </div>
 
             {/* Elements Toggle */}
-            <div className="space-y-3 pt-2 border-t border-gray-100">
+            <div className="space-y-3 p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">智能处理</label>
 
                 <div className="flex items-center justify-between">
@@ -121,7 +121,7 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
             </div>
 
             {/* Display Elements */}
-            <div className="space-y-3 pt-2 border-t border-gray-100">
+            <div className="space-y-3 p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">显示元素</label>
 
                 <div className="flex items-center justify-between">
@@ -163,14 +163,14 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
             </div>
 
             {/* My Templates */}
-            <div className="space-y-3 pt-2 border-t border-gray-100">
+            <div className="space-y-3 p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
                 <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">我的模板</label>
                 <TemplateManager state={state} onApply={(tpl) => {
                     Object.entries(tpl).forEach(([k, v]) => handleChange(k as keyof CardState, v));
                 }} />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
+            <div className="grid grid-cols-2 gap-4 p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
                 <div className="space-y-1">
                     <label htmlFor="input-author" className="text-sm font-medium text-gray-700">作者</label>
                     <input
@@ -225,11 +225,14 @@ const TemplateManager: React.FC<{ state: CardState; onApply: (data: Partial<Card
     };
     return (
         <div className="space-y-2">
-            <div className="flex gap-2">
-                <input value={name} onChange={(e) => setName(e.target.value)} className="flex-1 px-2 py-2 border border-gray-300 rounded-lg text-sm" placeholder="模板名称" />
-                <button onClick={saveCurrent} className="px-3 py-2 bg-gray-900 text-white rounded-lg text-sm">保存当前</button>
+            <div className="space-y-1">
+                <label className="text-xs text-gray-500">模板名称</label>
+                <div className="flex gap-2">
+                    <input value={name} onChange={(e) => setName(e.target.value)} className="flex-1 px-2 py-2 border border-gray-300 rounded-lg text-sm" placeholder="例如：品牌通用样式" />
+                    <button onClick={saveCurrent} className="px-3 py-2 bg-gray-900 text-white rounded-lg text-sm">保存当前</button>
+                </div>
             </div>
-            <div className="space-y-2 max-h-40 overflow-auto">
+            <div className="space-y-2 max-h-44 overflow-auto">
                 {templates.map(t => (
                     <div key={t.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                         <div className="text-xs text-gray-700">
