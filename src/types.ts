@@ -41,8 +41,6 @@ export interface CardState {
   paragraphSpacing: number;
   textAlign: 'left' | 'center' | 'right';
   autoFontSize: boolean;
-  autoEmoji: boolean;
-  autoPaginate: boolean;
 
   // Export Settings
   exportEngine: 'html2canvas' | 'html-to-image';
@@ -50,6 +48,10 @@ export interface CardState {
 
   // Date
   showDate: boolean;
+
+  // Content Processing
+  autoEmoji: boolean;
+  autoPaginate: boolean;
 }
 
 export interface ThemeConfig {
