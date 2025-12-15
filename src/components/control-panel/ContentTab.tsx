@@ -162,6 +162,14 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                 )}
             </div>
 
+            {/* My Templates */}
+            <div className="space-y-3 pt-2 border-t border-gray-100">
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">我的模板</label>
+                <TemplateManager state={state} onApply={(tpl) => {
+                    Object.entries(tpl).forEach(([k, v]) => handleChange(k as keyof CardState, v));
+                }} />
+            </div>
+
             <div className="grid grid-cols-2 gap-4 border-t border-gray-100 pt-4">
                 <div className="space-y-1">
                     <label htmlFor="input-author" className="text-sm font-medium text-gray-700">作者</label>
@@ -185,6 +193,58 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 outline-none"
                     />
                 </div>
+            </div>
+        </div>
+    );
+};
+
+const TemplateManager: React.FC<{ state: CardState; onApply: (data: Partial<CardState>) => void }> = ({ state, onApply }) => {
+    const [name, setName] = React.useState('');
+    const loadTemplates = (): { id: string; name: string; data: Partial<CardState>; createdAt: number }[] => {
+        try { return JSON.parse(localStorage.getItem('rednote-templates') || '[]'); } catch { return []; }
+    };
+    const saveTemplates = (list: any[]) => localStorage.setItem('rednote-templates', JSON.stringify(list));
+    const [templates, setTemplates] = React.useState(loadTemplates());
+    const saveCurrent = () => {
+        const id = String(Date.now());
+        const data: Partial<CardState> = { ...state };
+        const item = { id, name: name || `模板-${new Date().toLocaleString()}`, data, createdAt: Date.now() };
+        const next = [item, ...templates].slice(0, 100);
+        saveTemplates(next);
+        setTemplates(next);
+        setName('');
+    };
+    const applyTemplate = (id: string) => {
+        const tpl = templates.find(t => t.id === id);
+        if (tpl) onApply(tpl.data);
+    };
+    const deleteTemplate = (id: string) => {
+        const next = templates.filter(t => t.id !== id);
+        saveTemplates(next);
+        setTemplates(next);
+    };
+    return (
+        <div className="space-y-2">
+            <div className="flex gap-2">
+                <input value={name} onChange={(e) => setName(e.target.value)} className="flex-1 px-2 py-2 border border-gray-300 rounded-lg text-sm" placeholder="模板名称" />
+                <button onClick={saveCurrent} className="px-3 py-2 bg-gray-900 text-white rounded-lg text-sm">保存当前</button>
+            </div>
+            <div className="space-y-2 max-h-40 overflow-auto">
+                {templates.map(t => (
+                    <div key={t.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                        <div className="text-xs text-gray-700">
+                            <div className="font-medium">{t.name}</div>
+                            <div className="opacity-60">{new Date(t.createdAt).toLocaleString()}</div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button onClick={() => applyTemplate(t.id)} className="px-2 py-1 bg-gray-200 rounded text-xs">应用</button>
+                            <button onClick={() => deleteTemplate(t.id)} className="px-2 py-1 bg-gray-200 rounded text-xs">删除</button>
+                        </div>
+                    </div>
+                ))}
+                {templates.length === 0 && (
+                    <div className="text-xs text-gray-500">暂无模板，点击“保存当前”添加</div>
+                )}
             </div>
         </div>
     );

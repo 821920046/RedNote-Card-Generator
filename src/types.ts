@@ -21,6 +21,17 @@ export interface CardState {
   customTextColor: string;
   customBgColor: string;
   backgroundImage: string | null;
+  // Branding
+  showLogo: boolean;
+  logoUrl: string;
+  logoPosition: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  logoSize: number; // px
+  logoOpacity: number; // 0 - 1
+  // Watermark
+  showWatermark: boolean;
+  watermarkText: string;
+  watermarkPosition: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'center';
+  watermarkOpacity: number; // 0 - 1
   // QR Code
   showQrCode: boolean;
   qrCodeContent: string;
@@ -73,4 +84,11 @@ export interface CardHistory {
   timestamp: number;
   state: CardState;
   thumbnail?: string;
+}
+
+export interface UserTemplate {
+  id: string;
+  name: string;
+  data: Partial<CardState>;
+  createdAt: number;
 }

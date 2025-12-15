@@ -237,48 +237,73 @@ const StyleTab: React.FC<StyleTabProps> = ({ state, handleChange }) => {
                 </div>
             </div>
 
-            {/* Export Settings */}
-            <div className="space-y-2 pt-2 border-t border-gray-100">
-                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">导出引擎</label>
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => handleChange('exportEngine', 'html2canvas')}
-                        className={`flex-1 py-1.5 text-xs font-medium rounded-lg border transition-all ${state.exportEngine === 'html2canvas' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-                    >
-                        标准 (Fast)
-                    </button>
-                    <button
-                        onClick={() => handleChange('exportEngine', 'html-to-image')}
-                        className={`flex-1 py-1.5 text-xs font-medium rounded-lg border transition-all ${state.exportEngine === 'html-to-image' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-                    >
-                        高清 (SVG)
-                    </button>
-                </div>
-                <p className="text-[10px] text-gray-400 px-1">
-                    {state.exportEngine === 'html-to-image' ? '更清晰，支持复杂样式，但速度稍慢。' : '兼容性好，速度快，适合大多数情况。'}
-                </p>
+            {/* Branding & Watermark */}
+            <div className="space-y-3 pt-2 border-t border-gray-100">
+                <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">品牌与水印</label>
                 <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">导出格式</label>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => handleChange('exportFormat', 'png')}
-                            className={`flex-1 py-1.5 text-xs font-medium rounded-lg border transition-all ${state.exportFormat === 'png' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-                        >
-                            PNG
-                        </button>
-                        <button
-                            onClick={() => handleChange('exportFormat', 'webp')}
-                            className={`flex-1 py-1.5 text-xs font-medium rounded-lg border transition-all ${state.exportFormat === 'webp' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-                        >
-                            WebP
-                        </button>
-                        <button
-                            onClick={() => handleChange('exportFormat', 'pdf')}
-                            className={`flex-1 py-1.5 text-xs font-medium rounded-lg border transition-all ${state.exportFormat === 'pdf' ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-                        >
-                            PDF
-                        </button>
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-700">显示 Logo</span>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={state.showLogo} onChange={(e) => handleChange('showLogo', e.target.checked)} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
+                        </label>
                     </div>
+                    {state.showLogo && (
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                                <label className="text-xs text-gray-500">Logo 地址</label>
+                                <input type="text" value={state.logoUrl} onChange={(e) => handleChange('logoUrl', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm" placeholder="https://..." />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs text-gray-500">位置</label>
+                                <select value={state.logoPosition} onChange={(e) => handleChange('logoPosition', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm">
+                                    <option value="top-left">左上</option>
+                                    <option value="top-right">右上</option>
+                                    <option value="bottom-left">左下</option>
+                                    <option value="bottom-right">右下</option>
+                                </select>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs text-gray-500">大小</label>
+                                <input type="range" min={24} max={128} step={4} value={state.logoSize} onChange={(e) => handleChange('logoSize', parseInt(e.target.value))} className="w-full" />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs text-gray-500">不透明度</label>
+                                <input type="range" min={0.1} max={1} step={0.05} value={state.logoOpacity} onChange={(e) => handleChange('logoOpacity', parseFloat(e.target.value))} className="w-full" />
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-700">显示水印</span>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" checked={state.showWatermark} onChange={(e) => handleChange('showWatermark', e.target.checked)} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
+                        </label>
+                    </div>
+                    {state.showWatermark && (
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                                <label className="text-xs text-gray-500">水印文本</label>
+                                <input type="text" value={state.watermarkText} onChange={(e) => handleChange('watermarkText', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm" placeholder="RedNote" />
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs text-gray-500">位置</label>
+                                <select value={state.watermarkPosition} onChange={(e) => handleChange('watermarkPosition', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm">
+                                    <option value="center">居中</option>
+                                    <option value="top-left">左上</option>
+                                    <option value="top-right">右上</option>
+                                    <option value="bottom-left">左下</option>
+                                    <option value="bottom-right">右下</option>
+                                </select>
+                            </div>
+                            <div className="space-y-1">
+                                <label className="text-xs text-gray-500">不透明度</label>
+                                <input type="range" min={0.05} max={1} step={0.05} value={state.watermarkOpacity} onChange={(e) => handleChange('watermarkOpacity', parseFloat(e.target.value))} className="w-full" />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 

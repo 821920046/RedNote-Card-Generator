@@ -280,6 +280,34 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
 
         {renderLayout()}
 
+        {state.showLogo && state.logoUrl && (
+          <div
+            className={`absolute ${state.logoPosition === 'top-left' ? 'top-4 left-4' : state.logoPosition === 'top-right' ? 'top-4 right-4' : state.logoPosition === 'bottom-left' ? 'bottom-4 left-4' : 'bottom-4 right-4'} z-20`}
+            style={{ opacity: state.logoOpacity }}
+          >
+            <img src={state.logoUrl} alt="logo" style={{ width: state.logoSize, height: state.logoSize }} className="rounded-md shadow-sm bg-white/70 backdrop-blur-sm" />
+          </div>
+        )}
+
+        {state.showWatermark && state.watermarkText && (
+          <>
+            {state.watermarkPosition === 'center' ? (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                <div className="font-bold tracking-widest uppercase" style={{ opacity: state.watermarkOpacity, fontSize: '48px', letterSpacing: '0.2em', color: textStyle.color || 'currentColor' }}>
+                  {state.watermarkText}
+                </div>
+              </div>
+            ) : (
+              <div
+                className={`absolute ${state.watermarkPosition === 'top-left' ? 'top-4 left-4' : state.watermarkPosition === 'top-right' ? 'top-4 right-4' : state.watermarkPosition === 'bottom-left' ? 'bottom-4 left-4' : 'bottom-4 right-4'} pointer-events-none z-10`}
+                style={{ opacity: state.watermarkOpacity }}
+              >
+                <div className={`text-xs md:text-sm ${textClass}`} style={textStyle}>{state.watermarkText}</div>
+              </div>
+            )}
+          </>
+        )}
+
         {/* Footer info (Author/Tag/QR) */}
         {!['minimalist'].includes(state.layout) && (
           <div className={`mt-4 pt-3 md:pt-4 border-t border-dashed border-opacity-30 flex justify-between items-end z-10 shrink-0`}

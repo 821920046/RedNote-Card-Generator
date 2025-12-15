@@ -24,6 +24,15 @@ const App: React.FC = () => {
     customTextColor: '#1f1f1f',
     customBgColor: '#ffffff',
     backgroundImage: null,
+    showLogo: false,
+    logoUrl: '',
+    logoPosition: 'top-left',
+    logoSize: 48,
+    logoOpacity: 0.9,
+    showWatermark: false,
+    watermarkText: 'RedNote',
+    watermarkPosition: 'center',
+    watermarkOpacity: 0.12,
     showQrCode: false,
     qrCodeContent: 'https://www.xiaohongshu.com',
     showDate: true,
@@ -69,6 +78,9 @@ const App: React.FC = () => {
   const measureRef = useRef<HTMLDivElement>(null);
   const [measureContent, setMeasureContent] = useState<string>('');
   const [autoSlides, setAutoSlides] = useState<string[] | null>(null);
+  const [past, setPast] = useState<CardState[]>([]);
+  const [future, setFuture] = useState<CardState[]>([]);
+  const [isDraftsOpen, setIsDraftsOpen] = useState(false);
 
   // --- Pagination Logic ---
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -93,6 +105,48 @@ const App: React.FC = () => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  const applySetState: React.Dispatch<React.SetStateAction<CardState>> = (action) => {
+    setState(prev => {
+      const next = typeof action === 'function' ? (action as (p: CardState) => CardState)(prev) : action;
+      setPast(p => [...p, prev]);
+      setFuture([]);
+      return next;
+    });
+  };
+  const undo = () => {
+    setPast(p => {
+      if (p.length === 0) return p;
+      const prev = p[p.length - 1];
+      setFuture(f => [state, ...f]);
+      setState(prev);
+      return p.slice(0, -1);
+    });
+  };
+  const redo = () => {
+    setFuture(f => {
+      if (f.length === 0) return f;
+      const next = f[0];
+      setPast(p => [...p, state]);
+      setState(next);
+      return f.slice(1);
+    });
+  };
+  const saveDraft = () => {
+    const listRaw = localStorage.getItem('rednote-history') || '[]';
+    const list = JSON.parse(listRaw);
+    const item = { id: String(Date.now()), timestamp: Date.now(), state };
+    const next = [item, ...list].slice(0, 50);
+    localStorage.setItem('rednote-history', JSON.stringify(next));
+    setIsDraftsOpen(true);
+  };
+  const loadDrafts = (): { id: string; timestamp: number; state: CardState }[] => {
+    try { return JSON.parse(localStorage.getItem('rednote-history') || '[]'); } catch { return []; }
+  };
+  const deleteDraft = (id: string) => {
+    const list = loadDrafts().filter(d => d.id !== id);
+    localStorage.setItem('rednote-history', JSON.stringify(list));
+  };
 
   useEffect(() => {
     const shouldPaginate = state.autoPaginate && ['quote'].indexOf(state.layout) === -1;
@@ -258,7 +312,7 @@ const App: React.FC = () => {
 
       {/* --- Desktop: Left Control Panel --- */}
       < div className="hidden md:block w-[400px] h-full shadow-xl z-20" >
-        <ControlPanel state={state} setState={setState} isMobile={false} />
+        <ControlPanel state={state} setState={applySetState} isMobile={false} />
       </div >
 
       {/* --- Main Preview Area --- */}
@@ -279,6 +333,12 @@ const App: React.FC = () => {
             {isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Download size={20} />}
             {isGenerating ? `生成中 ${exportProgress ?? 0}%` : '下载图片'}
           </button>
+          <div className="flex items-center gap-2">
+            <button onClick={undo} disabled={past.length === 0} className="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-50">撤销</button>
+            <button onClick={redo} disabled={future.length === 0} className="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 disabled:opacity-50">重做</button>
+            <button onClick={saveDraft} className="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700">保存草稿</button>
+            <button onClick={() => setIsDraftsOpen(true)} className="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700">草稿库</button>
+          </div>
         </div >
 
         {/* Preview Canvas Container */}
@@ -366,7 +426,7 @@ const App: React.FC = () => {
             isOpen={isMobileEditOpen}
             onClose={() => setIsMobileEditOpen(false)}
             state={state}
-            setState={setState}
+            setState={applySetState}
           />
         )
       }
@@ -454,6 +514,36 @@ const App: React.FC = () => {
           </div>
         )
       }
+
+      {isDraftsOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm p-6">
+          <div className="bg-white rounded-2xl w-full max-w-2xl shadow-xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b">
+              <div className="font-bold">草稿库</div>
+              <button onClick={() => setIsDraftsOpen(false)} className="p-2 rounded hover:bg-gray-100">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-6 max-h-[60vh] overflow-auto space-y-3">
+              {loadDrafts().map(d => (
+                <div key={d.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="text-sm text-gray-700">
+                    <div className="font-medium">{new Date(d.timestamp).toLocaleString()}</div>
+                    <div className="opacity-70">{d.state.title}</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => { setState(d.state); setIsDraftsOpen(false); }} className="px-3 py-1.5 rounded bg-gray-900 text-white text-sm">载入</button>
+                    <button onClick={() => { deleteDraft(d.id); }} className="px-3 py-1.5 rounded bg-gray-200 text-sm">删除</button>
+                  </div>
+                </div>
+              ))}
+              {loadDrafts().length === 0 && (
+                <div className="text-center text-gray-500 text-sm">暂无草稿，点击顶部“保存草稿”加入</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
     </div >
   );
