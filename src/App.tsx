@@ -322,17 +322,17 @@ const App: React.FC = () => {
   const ratioConfig = RATIOS.find(r => r.id === state.aspectRatio) || RATIOS[0];
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-100 overflow-hidden font-sans-sc" >
+    <div className="flex flex-col md:flex-row h-screen bg-gray-100 overflow-hidden font-sans-sc">
 
       {/* --- Desktop: Left Control Panel --- */}
-      < div className="hidden md:block w-[400px] h-full shadow-xl z-20" >
+      <div className="hidden md:block w-[400px] h-full shadow-xl z-20">
         <ControlPanel state={state} setState={applySetState} isMobile={false} />
-      </div >
+      </div>
 
       {/* --- Main Preview Area --- */}
-      < div className="flex-1 relative flex flex-col h-full overflow-hidden" >
+      <div className="flex-1 relative flex flex-col h-full overflow-hidden">
         {/* Top Bar (Desktop) */}
-        < div className="hidden md:flex items-center justify-between px-8 py-4 bg-white/80 backdrop-blur border-b border-gray-200 z-10" >
+        <div className="hidden md:flex items-center justify-between px-8 py-4 bg-white/80 backdrop-blur border-b border-gray-200 z-10">
           <div className="flex items-center gap-2 text-gray-700 font-bold text-lg">
             <div className="p-1.5 bg-red-500 rounded-lg text-white">
               <Sparkles size={18} />
@@ -353,15 +353,15 @@ const App: React.FC = () => {
             <button onClick={saveDraft} className="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700">保存草稿</button>
             <button onClick={() => setIsDraftsOpen(true)} className="px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700">草稿库</button>
           </div>
-        </div >
+        </div>
 
         {/* Preview Canvas Container */}
-        < div className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-auto bg-gray-100/50 relative" >
+        <div className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-auto bg-gray-100/50 relative">
           {/* Background pattern */}
-          < div className="absolute inset-0 z-0 opacity-30" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div >
+          <div className="absolute inset-0 z-0 opacity-30" style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
 
           {/* Card Container */}
-          < div
+          <div
             className="relative shadow-2xl transition-all duration-300 z-10 mx-auto"
             style={{
               aspectRatio: `${ratioConfig.value}`,
@@ -371,7 +371,7 @@ const App: React.FC = () => {
             }}
           >
             <CardPreview ref={cardRef} state={{ ...state, content: currentContent }} />
-          </div >
+          </div>
           <div style={{ position: 'fixed', left: '-9999px', top: '-9999px', opacity: 0, pointerEvents: 'none' }}>
             <div
               className="relative"
@@ -410,10 +410,10 @@ const App: React.FC = () => {
               </div>
             )
           }
-        </div >
+        </div>
 
         {/* --- Mobile: Bottom Action Bar --- */}
-        < div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 p-4 pb-8 z-30 flex gap-3 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]" >
+        <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-200 p-4 pb-8 z-30 flex gap-3 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
           <button
             onClick={() => setIsMobileEditOpen(true)}
             className="flex-1 py-3.5 bg-gray-100 text-gray-800 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition active:scale-95"
@@ -429,8 +429,8 @@ const App: React.FC = () => {
             {isGenerating ? <Loader2 className="animate-spin" size={18} /> : <Download size={18} />}
             保存图片
           </button>
-        </div >
-      </div >
+        </div>
+      </div>
 
       {/* --- Mobile: Edit Drawer (Bottom Sheet) --- */}
       {/* --- Mobile: Edit Drawer (Bottom Sheet) --- */}
@@ -559,7 +559,7 @@ const App: React.FC = () => {
         </div>
       )}
 
-    </div >
+    </div>
   );
 };
 
