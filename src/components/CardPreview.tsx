@@ -124,7 +124,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
 
       if (state.layout === 'sketch') {
         return (
-          <p key={index} className={`${textClass} ${sizeConfig.sketchContent} mb-2 font-handwriting`} style={textStyle}>
+          <p key={index} className={`${textClass} ${sizeConfig.sketchContent} mb-2`} style={textStyle}>
             {line}
           </p>
         );
@@ -186,10 +186,10 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
         return (
           <div className="flex flex-col justify-center items-center text-center flex-1 min-h-0 space-y-6 md:space-y-8 relative z-10">
             <Quote size={40} className={`${accentClass} opacity-80 md:w-12 md:h-12`} style={accentStyle} />
-            <blockquote className={`${textClass} ${sizeConfig.quote} font-serif-sc font-bold leading-tight px-2 md:px-4 drop-shadow-sm`} style={textStyle}>
+            <blockquote className={`${textClass} ${sizeConfig.quote} font-bold leading-tight px-2 md:px-4 drop-shadow-sm`} style={textStyle}>
               <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>{state.content}</ReactMarkdown>
             </blockquote>
-            <p className={`text-lg md:text-xl font-artistic ${accentClass}`} style={accentStyle}>— {state.subtitle}</p>
+            <p className={`text-lg md:text-xl ${accentClass}`} style={accentStyle}>— {state.subtitle}</p>
           </div>
         );
 
@@ -197,7 +197,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
         return (
           <div className="flex flex-col flex-1 min-h-0 pt-2 md:pt-4 relative z-10">
             <div className="mb-6 md:mb-8 border-b-2 pb-4 border-opacity-20 shrink-0 pr-12" style={{ borderColor: textStyle.color || 'currentColor' }}>
-              <p className={`text-lg font-artistic opacity-80 mb-2 ${accentClass}`} style={accentStyle}>{state.subtitle || 'Definition'}</p>
+              <p className={`text-lg opacity-80 mb-2 ${accentClass}`} style={accentStyle}>{state.subtitle || 'Definition'}</p>
               <h1 className={`${textClass} ${sizeConfig.dict} font-extrabold leading-none`} style={textStyle}>{state.title}</h1>
             </div>
             <div id="content-area" className={`flex-grow p-4 md:p-6 rounded-lg border-l-4 ${themeConfig.border || 'border-gray-200'} overflow-hidden ${state.backgroundImage ? 'bg-white/90 backdrop-blur-md shadow-lg' : 'bg-white/5'}`} style={{ borderLeftColor: accentStyle.color }}>
@@ -224,14 +224,14 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
           <div className="flex flex-col flex-1 min-h-0 p-2 md:p-3 relative z-10" style={sketchBorderStyle}>
             <div className="flex items-start mb-4 md:mb-6 pt-2 md:pt-4 px-2 shrink-0">
               <Sparkles size={32} className={`${accentClass} md:w-10 md:h-10`} style={accentStyle} />
-              <h1 className={`${textClass} ${sizeConfig.sketchTitle} font-handwriting font-bold leading-tight ml-3 md:ml-4`} style={textStyle}>
+              <h1 className={`${textClass} ${sizeConfig.sketchTitle} font-bold leading-tight ml-3 md:ml-4`} style={textStyle}>
                 {state.title}
               </h1>
             </div>
             <div id="content-area" className="flex-grow space-y-3 md:space-y-4 pl-4 md:pl-6 border-l-2 border-dashed border-opacity-50 overflow-hidden" style={{ borderColor: accentStyle.color || 'currentColor' }}>
               {renderContent()}
             </div>
-            <p className={`mt-4 md:mt-6 text-sm italic font-handwriting text-right opacity-70 shrink-0 ${accentClass}`} style={accentStyle}>—— {state.subtitle}</p>
+            <p className={`mt-4 md:mt-6 text-sm italic text-right opacity-70 shrink-0 ${accentClass}`} style={accentStyle}>—— {state.subtitle}</p>
           </div>
         );
 
@@ -240,7 +240,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
           <div className="flex flex-col justify-between flex-1 min-h-0 py-2 md:py-4 relative z-10">
             <div className="space-y-4 md:space-y-6 text-center shrink-0">
               <p className={`${accentClass} ${sizeConfig.minimalistSubtitle} font-light tracking-[0.2em] uppercase`} style={accentStyle}>{state.subtitle}</p>
-              <h1 className={`${textClass} ${sizeConfig.minimalistTitle} font-serif-sc font-thin leading-tight drop-shadow-sm`} style={textStyle}>{state.title}</h1>
+              <h1 className={`${textClass} ${sizeConfig.minimalistTitle} font-thin leading-tight drop-shadow-sm`} style={textStyle}>{state.title}</h1>
             </div>
             <div className="flex-grow flex items-center justify-center text-center px-4 md:px-8 overflow-hidden">
               <div id="content-area" className={`max-w-md w-full ${state.backgroundImage ? 'bg-white/80 p-6 shadow-xl backdrop-blur-md' : ''}`}>
