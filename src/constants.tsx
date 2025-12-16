@@ -59,6 +59,7 @@ export const THEME_GROUPS: ThemeGroup[] = [
       { id: 'deepsea', name: '深海', bg: '', text: 'text-white', accent: 'text-[#00f2f6]', border: 'border-blue-700', isGradient: true, bgStyle: { background: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)' } },
       { id: 'forest', name: '森林', bg: '', text: 'text-white', accent: 'text-[#2ecc71]', border: 'border-green-700', isGradient: true, bgStyle: { background: 'linear-gradient(135deg, #1A2980 0%, #26D0CE 100%)' } },
       { id: 'aurora', name: '极光', bg: '', text: 'text-white', accent: 'text-[#2ecc71]', border: 'border-blue-700', isGradient: true, bgStyle: { background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)' } },
+      { id: 'liquidglass', name: '液态玻璃', bg: '', text: 'text-white', accent: 'text-transparent bg-clip-text bg-gradient-to-r from-[#8A2BE2] via-[#6A5ACD] to-[#00C6FF]', border: 'border-blue-300', isGradient: true, bgStyle: { background: 'radial-gradient(1200px circle at 20% 20%, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 30%), radial-gradient(1000px circle at 80% 30%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 35%), linear-gradient(135deg, #0B1026 0%, #1A1F3B 30%, #2B2C68 60%, #0A2749 100%)' } },
     ]
   },
   {

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type ThemeId = 'minimal' | 'cream' | 'sketch' | 'xhs-red' | 'cherry' | 'sunset' | 'bento' | 'flowing' | 'obsidian' | 'cyber' | 'milkyway' | 'deepsea' | 'forest' | 'aurora' | 'custom';
+export type ThemeId = 'minimal' | 'cream' | 'sketch' | 'xhs-red' | 'cherry' | 'sunset' | 'bento' | 'flowing' | 'obsidian' | 'cyber' | 'milkyway' | 'deepsea' | 'forest' | 'aurora' | 'liquidglass' | 'custom';
 export type LayoutId = 'list' | 'quote' | 'dict' | 'grid' | 'sketch' | 'minimalist';
 export type AspectRatio = '3:4' | '9:16';
 export type FontSize = 'small' | 'normal' | 'large';
