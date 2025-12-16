@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: './', // Use relative path for maximum compatibility
+  base: '/', // 绝对路径更符合大多数移动浏览器的资源解析
 })
