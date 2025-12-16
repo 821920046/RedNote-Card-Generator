@@ -1,3 +1,5 @@
+@import url('https://fonts.font.im/css2?family=Noto+Sans+SC:wght@400;700&family=Noto+Serif+SC:wght@400;700&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=ZCOOL+KuaiLe&family=ZCOOL+QingKe+HuangYou&family=Long+Cang&family=Baloo+2:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -47,19 +49,19 @@ body {
   font-family: "Noto Serif SC", "Songti SC", "SimSun", "Times New Roman", Georgia, serif;
 }
 .font-handwriting {
-  font-family: "Segoe Print", "Bradley Hand", "Comic Sans MS", "KaiTi", cursive;
+  font-family: "Ma Shan Zheng", cursive;
 }
 .font-artistic {
-  font-family: Georgia, "Palatino Linotype", "Times New Roman", serif;
+  font-family: "ZCOOL XiaoWei", serif;
 }
 .font-poster {
-  font-family: Impact, "Arial Black", system-ui, sans-serif;
+  font-family: "ZCOOL QingKe HuangYou", system-ui, sans-serif;
 }
 .font-happy {
-  font-family: "Comic Sans MS", "Baloo 2", system-ui, sans-serif;
+  font-family: "ZCOOL KuaiLe", "Baloo 2", system-ui, sans-serif;
 }
 .font-calligraphy {
-  font-family: "KaiTi", "STKaiti", "Hanyi Senty Journal", cursive;
+  font-family: "Long Cang", cursive;
 }
 
 /* Normalize emoji rendering to avoid oversized baseline shift */
