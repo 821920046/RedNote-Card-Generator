@@ -455,7 +455,7 @@ const App: React.FC = () => {
   const ratioConfig = RATIOS.find(r => r.id === state.aspectRatio) || RATIOS[0];
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-100 overflow-hidden font-sans-sc">
+    <div className="flex flex-col md:flex-row h-[100dvh] w-full bg-gray-100 overflow-hidden font-sans-sc">
 
       {/* --- Desktop: Left Control Panel --- */}
       <div className="hidden md:block w-[400px] h-full shadow-xl z-20">
@@ -501,6 +501,7 @@ const App: React.FC = () => {
               height: isMobile ? 'auto' : '85vh',
               width: isMobile ? '90%' : 'auto', // Increased mobile width
               maxHeight: isMobile ? 'none' : 'none', // Removed max-height constraint on mobile
+              minHeight: isMobile ? '300px' : 'auto',
             }}
           >
             <CardPreview ref={cardRef} state={{ ...state, content: currentContent }} />
