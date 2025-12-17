@@ -129,6 +129,41 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                         <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
                     </label>
                 </div>
+
+                <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm text-gray-700">
+                            <Stamp size={16} />
+                            <span>显示水印</span>
+                        </div>
+                        <label htmlFor="toggle-show-watermark" className="relative inline-flex items-center cursor-pointer">
+                            <input id="toggle-show-watermark" name="showWatermark" type="checkbox" checked={state.showWatermark} onChange={(e) => handleChange('showWatermark', e.target.checked)} className="sr-only peer" />
+                            <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
+                        </label>
+                    </div>
+                    {state.showWatermark && (
+                        <div className="grid grid-cols-2 gap-3 pt-2">
+                            <div className="space-y-1">
+                                <label htmlFor="input-watermark-text" className="text-xs text-gray-500">水印文本</label>
+                                <input id="input-watermark-text" name="watermarkText" type="text" value={state.watermarkText} onChange={(e) => handleChange('watermarkText', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-1 focus:ring-red-200" placeholder="RedNote" />
+                            </div>
+                            <div className="space-y-1">
+                                <label htmlFor="select-watermark-position" className="text-xs text-gray-500">位置</label>
+                                <select id="select-watermark-position" name="watermarkPosition" value={state.watermarkPosition} onChange={(e) => handleChange('watermarkPosition', e.target.value)} className="w-full px-2 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:ring-1 focus:ring-red-200">
+                                    <option value="center">居中</option>
+                                    <option value="top-left">左上</option>
+                                    <option value="top-right">右上</option>
+                                    <option value="bottom-left">左下</option>
+                                    <option value="bottom-right">右下</option>
+                                </select>
+                            </div>
+                            <div className="space-y-1 col-span-2">
+                                <label htmlFor="input-watermark-opacity" className="text-xs text-gray-500">不透明度: {Math.round(state.watermarkOpacity * 100)}%</label>
+                                <input id="input-watermark-opacity" name="watermarkOpacity" type="range" min={0.05} max={1} step={0.05} value={state.watermarkOpacity} onChange={(e) => handleChange('watermarkOpacity', parseFloat(e.target.value))} className="w-full accent-red-500" />
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4 p-3 bg-white rounded-xl border border-gray-200 shadow-sm">

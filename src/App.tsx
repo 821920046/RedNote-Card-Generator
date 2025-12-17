@@ -35,7 +35,7 @@ const App: React.FC = () => {
     watermarkText: 'RedNote',
     watermarkPosition: 'center',
     watermarkOpacity: 0.12,
-    showDate: true,
+    showDate: false,
     // Typography Defaults
     lineHeight: 1.75,
     letterSpacing: 0,
@@ -44,8 +44,8 @@ const App: React.FC = () => {
     autoFontSize: true,
     exportEngine: 'html-to-image',
     exportFormat: 'png',
-    autoEmoji: true,
-    autoPaginate: true,
+    autoEmoji: false,
+    autoPaginate: false,
   });
 
   // Load draft from localStorage on mount
