@@ -32,9 +32,6 @@ export interface CardState {
   watermarkText: string;
   watermarkPosition: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'center';
   watermarkOpacity: number; // 0 - 1
-  // QR Code
-  showQrCode: boolean;
-  qrCodeContent: string;
   // Typography
   lineHeight: number;
   letterSpacing: number;
@@ -86,11 +83,4 @@ export interface CardHistory {
   timestamp: number;
   state: CardState;
   thumbnail?: string;
-}
-
-export interface UserTemplate {
-  id: string;
-  name: string;
-  data: Partial<CardState>;
-  createdAt: number;
 }

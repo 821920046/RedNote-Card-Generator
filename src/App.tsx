@@ -35,8 +35,6 @@ const App: React.FC = () => {
     watermarkText: 'RedNote',
     watermarkPosition: 'center',
     watermarkOpacity: 0.12,
-    showQrCode: false,
-    qrCodeContent: 'https://www.xiaohongshu.com',
     showDate: true,
     // Typography Defaults
     lineHeight: 1.75,

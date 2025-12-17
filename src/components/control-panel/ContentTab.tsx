@@ -1,7 +1,7 @@
 import React from 'react';
 import { CardState } from '../../types';
 import { PRESETS } from '../../constants';
-import { RotateCcw, Calendar, QrCode } from 'lucide-react';
+import { RotateCcw, Calendar } from 'lucide-react';
 
 interface ContentTabProps {
     state: CardState;
@@ -118,11 +118,6 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                 <p className="text-[10px] text-gray-400">
                     {state.autoPaginate ? `当前比例 ${state.aspectRatio}：基于渲染高度自动分页` : '关闭时需手动插入 === 分隔符'}
                 </p>
-            </div>
-
-            {/* Display Elements */}
-            <div className="space-y-3 p-3 bg-white rounded-xl border border-gray-200 shadow-sm" aria-labelledby="section-display">
-                <label id="section-display" className="text-xs font-bold text-gray-400 uppercase tracking-wider">显示元素</label>
 
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-sm text-gray-700">
@@ -131,43 +126,9 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                     </div>
                     <label htmlFor="toggle-show-date" className="relative inline-flex items-center cursor-pointer">
                         <input id="toggle-show-date" name="showDate" type="checkbox" checked={state.showDate} onChange={(e) => handleChange('showDate', e.target.checked)} className="sr-only peer" />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+                        <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-500"></div>
                     </label>
                 </div>
-
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm text-gray-700">
-                        <QrCode size={16} />
-                        <span>二维码</span>
-                    </div>
-                    <label htmlFor="toggle-show-qrcode" className="relative inline-flex items-center cursor-pointer">
-                        <input id="toggle-show-qrcode" name="showQrCode" type="checkbox" checked={state.showQrCode} onChange={(e) => handleChange('showQrCode', e.target.checked)} className="sr-only peer" />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
-                    </label>
-                </div>
-
-                {state.showQrCode && (
-                    <div className="animate-fade-in pl-6">
-                        <input
-                            id="input-qrcode-content"
-                            name="qrCodeContent"
-                            type="text"
-                            value={state.qrCodeContent}
-                            onChange={(e) => handleChange('qrCodeContent', e.target.value)}
-                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 outline-none"
-                            placeholder="二维码链接或内容"
-                            aria-label="二维码内容"
-                        />
-                    </div>
-                )}
-            </div>
-
-            {/* My Templates */}
-            <div className="space-y-3 p-3 bg-white rounded-xl border border-gray-200 shadow-sm" aria-labelledby="section-templates">
-                <label id="section-templates" className="text-xs font-bold text-gray-400 uppercase tracking-wider">我的模板</label>
-                <TemplateManager state={state} onApply={(tpl) => {
-                    Object.entries(tpl).forEach(([k, v]) => handleChange(k as keyof CardState, v));
-                }} />
             </div>
 
             <div className="grid grid-cols-2 gap-4 p-3 bg-white rounded-xl border border-gray-200 shadow-sm">
@@ -193,61 +154,6 @@ const ContentTab: React.FC<ContentTabProps> = ({ state, handleChange, onReset, o
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-100 outline-none"
                     />
                 </div>
-            </div>
-        </div>
-    );
-};
-
-const TemplateManager: React.FC<{ state: CardState; onApply: (data: Partial<CardState>) => void }> = ({ state, onApply }) => {
-    const [name, setName] = React.useState('');
-    const loadTemplates = (): { id: string; name: string; data: Partial<CardState>; createdAt: number }[] => {
-        try { return JSON.parse(localStorage.getItem('rednote-templates') || '[]'); } catch { return []; }
-    };
-    const saveTemplates = (list: any[]) => localStorage.setItem('rednote-templates', JSON.stringify(list));
-    const [templates, setTemplates] = React.useState(loadTemplates());
-    const saveCurrent = () => {
-        const id = String(Date.now());
-        const data: Partial<CardState> = { ...state };
-        const item = { id, name: name || `模板-${new Date().toLocaleString()}`, data, createdAt: Date.now() };
-        const next = [item, ...templates].slice(0, 100);
-        saveTemplates(next);
-        setTemplates(next);
-        setName('');
-    };
-    const applyTemplate = (id: string) => {
-        const tpl = templates.find(t => t.id === id);
-        if (tpl) onApply(tpl.data);
-    };
-    const deleteTemplate = (id: string) => {
-        const next = templates.filter(t => t.id !== id);
-        saveTemplates(next);
-        setTemplates(next);
-    };
-    return (
-        <div className="space-y-2">
-            <div className="space-y-1">
-                <label htmlFor="input-template-name" className="text-xs text-gray-500">模板名称</label>
-                <div className="flex gap-2">
-                    <input id="input-template-name" name="templateName" value={name} onChange={(e) => setName(e.target.value)} className="flex-1 px-2 py-2 border border-gray-300 rounded-lg text-sm" placeholder="例如：品牌通用样式" />
-                    <button onClick={saveCurrent} className="px-3 py-2 bg-gray-900 text-white rounded-lg text-sm">保存当前</button>
-                </div>
-            </div>
-            <div className="space-y-2 max-h-44 overflow-auto">
-                {templates.map(t => (
-                    <div key={t.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                        <div className="text-xs text-gray-700">
-                            <div className="font-medium">{t.name}</div>
-                            <div className="opacity-60">{new Date(t.createdAt).toLocaleString()}</div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <button onClick={() => applyTemplate(t.id)} className="px-2 py-1 bg-gray-200 rounded text-xs">应用</button>
-                            <button onClick={() => deleteTemplate(t.id)} className="px-2 py-1 bg-gray-200 rounded text-xs">删除</button>
-                        </div>
-                    </div>
-                ))}
-                {templates.length === 0 && (
-                    <div className="text-xs text-gray-500">暂无模板，点击“保存当前”添加</div>
-                )}
             </div>
         </div>
     );

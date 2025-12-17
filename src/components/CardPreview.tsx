@@ -308,7 +308,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
           </>
         )}
 
-        {/* Footer info (Author/Tag/QR) */}
+        {/* Footer info (Author/Tag) */}
         {!['minimalist'].includes(state.layout) && (
           <div className={`mt-4 pt-3 md:pt-4 border-t border-dashed border-opacity-30 flex justify-between items-end z-10 shrink-0`}
             style={{ borderColor: textStyle.color || 'rgba(0,0,0,0.2)' }}>
@@ -317,17 +317,6 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
               <span className={`text-sm font-bold opacity-80 ${accentClass} ${state.backgroundImage ? 'bg-white/80 px-2 py-0.5 rounded' : ''}`} style={accentStyle}>{state.author}</span>
               <span className={`text-xs opacity-60 ${textClass} ${state.backgroundImage ? 'bg-white/60 px-2 py-0.5 rounded mt-1' : ''}`} style={textStyle}>#{state.tag}</span>
             </div>
-
-            {/* QR Code rendering */}
-            {state.showQrCode && (
-              <div className="p-1 bg-white rounded-lg shadow-sm ml-4">
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(state.qrCodeContent)}`}
-                  alt="QR"
-                  className="w-12 h-12 md:w-14 md:h-14"
-                />
-              </div>
-            )}
           </div>
         )}
 
