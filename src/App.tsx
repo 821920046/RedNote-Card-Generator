@@ -245,37 +245,13 @@ const App: React.FC = () => {
 
   // --- Image Generation Logic ---
   const handleDownload = async () => {
-    if (isGenerating || !cardRef.current) return;
+    if (isGenerating) return;
     setIsGenerating(true);
     setGeneratedImage(null);
     setExportError(null);
     setExportProgress(5);
 
     try {
-      // 1. Get the actual content div
-      await new Promise(resolve => setTimeout(resolve, 50));
-      setExportProgress(15);
-      const elementToCapture = cardRef.current.querySelector('#capture-target') as HTMLElement;
-      if (!elementToCapture) throw new Error("Capture target not found");
-
-      // 2. Wait for fonts
-      if (document.fonts) await document.fonts.ready;
-      setExportProgress(30);
-      await new Promise(resolve => setTimeout(resolve, 200));
-
-      // 3. Determine Scale based on DPR
-      const scale = isMobile ? 2 : 3; // Reduced mobile scale slightly for stability
-      let dataUrl = '';
-      let success = false;
-
-      // Helper for timeout
-      const withTimeout = <T,>(promise: Promise<T>, ms: number, label: string): Promise<T> => {
-        return Promise.race([
-          promise,
-          new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms))
-        ]);
-      };
-
       // Helper to load images
       const preloadImages = async (element: HTMLElement) => {
         const images = Array.from(element.querySelectorAll('img'));
@@ -289,68 +265,75 @@ const App: React.FC = () => {
         await Promise.all(promises);
       };
 
-      await preloadImages(elementToCapture);
+      const withTimeout = <T,>(promise: Promise<T>, ms: number, label: string): Promise<T> => {
+        return Promise.race([
+          promise,
+          new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms))
+        ]);
+      };
 
-      // Try html-to-image first if configured
-      if (state.exportEngine === 'html-to-image' && state.exportFormat === 'png') {
-        try {
-          const { toPng } = await import('html-to-image');
-          setExportProgress(60);
-          
-          // First attempt
+      const captureElement = async (element: HTMLElement): Promise<string> => {
+        await preloadImages(element);
+        const scale = isMobile ? 2 : 3;
+        let dataUrl = '';
+        let success = false;
+
+        // Try html-to-image first if configured
+        if (state.exportEngine === 'html-to-image' && state.exportFormat === 'png') {
           try {
-            dataUrl = await withTimeout(
-              toPng(elementToCapture, { 
-                cacheBust: true, 
-                pixelRatio: scale, 
-                quality: 1.0,
-                skipAutoScale: true,
-                filter: (node) => !node.classList?.contains('exclude-from-capture')
-              }),
-              10000, // Increased to 10s
-              'html-to-image-attempt-1'
-            );
-            success = true;
-          } catch (firstError) {
-            console.warn('html-to-image first attempt failed, retrying...', firstError);
-            // Second attempt with slightly different settings or just retry
-            await new Promise(r => setTimeout(r, 500));
-            dataUrl = await withTimeout(
-              toPng(elementToCapture, { 
-                cacheBust: true, 
-                pixelRatio: scale, 
-                quality: 1.0,
-                skipAutoScale: true,
-                filter: (node) => !node.classList?.contains('exclude-from-capture')
-              }),
-              15000, // 15s for retry
-              'html-to-image-attempt-2'
-            );
-            success = true;
+            const { toPng } = await import('html-to-image');
+            
+            // First attempt
+            try {
+              dataUrl = await withTimeout(
+                toPng(element, { 
+                  cacheBust: true, 
+                  pixelRatio: scale, 
+                  quality: 1.0,
+                  skipAutoScale: true,
+                  filter: (node) => !node.classList?.contains('exclude-from-capture')
+                }),
+                10000, 
+                'html-to-image-attempt-1'
+              );
+              success = true;
+            } catch (firstError) {
+              console.warn('html-to-image first attempt failed, retrying...', firstError);
+              // Second attempt
+              await new Promise(r => setTimeout(r, 500));
+              dataUrl = await withTimeout(
+                toPng(element, { 
+                  cacheBust: true, 
+                  pixelRatio: scale, 
+                  quality: 1.0,
+                  skipAutoScale: true,
+                  filter: (node) => !node.classList?.contains('exclude-from-capture')
+                }),
+                15000, 
+                'html-to-image-attempt-2'
+              );
+              success = true;
+            }
+          } catch (error) {
+            console.warn('html-to-image failed or timed out:', error);
+            // Fall through to html2canvas
           }
-        } catch (error) {
-          console.warn('html-to-image failed or timed out:', error);
-          // Fall through to html2canvas
         }
-      }
 
-      // Fallback or default to html2canvas
-      if (!success) {
-        console.log('Falling back to html2canvas...');
-        try {
+        // Fallback or default to html2canvas
+        if (!success) {
           const html2canvas = (await import('html2canvas')).default;
-          setExportProgress(state.exportEngine === 'html-to-image' ? 70 : 60);
           
           const canvas = await withTimeout(
-            html2canvas(elementToCapture, {
+            html2canvas(element, {
               scale: scale,
               useCORS: true,
               backgroundColor: null,
               logging: false, 
               allowTaint: true,
               scrollY: 0,
-              windowWidth: elementToCapture.scrollWidth,
-              windowHeight: elementToCapture.scrollHeight,
+              windowWidth: element.scrollWidth,
+              windowHeight: element.scrollHeight,
               ignoreElements: (element) => element.classList.contains('exclude-from-capture'),
               onclone: (clonedDoc) => {
                 const clonedElement = clonedDoc.getElementById('capture-target');
@@ -360,7 +343,7 @@ const App: React.FC = () => {
                 }
               }
             }),
-            20000, // Increased to 20s
+            20000, 
             'html2canvas'
           );
           
@@ -369,40 +352,99 @@ const App: React.FC = () => {
           } else {
             dataUrl = canvas.toDataURL('image/png', 1.0);
           }
+        }
+        return dataUrl;
+      };
+
+      // 1. Wait for fonts
+      if (document.fonts) await document.fonts.ready;
+      setExportProgress(10);
+      await new Promise(resolve => setTimeout(resolve, 200));
+
+      // 2. Determine Single vs Batch
+      if (slides.length > 1) {
+        // --- BATCH EXPORT ---
+        const targets: HTMLElement[] = [];
+        for (let i = 0; i < slides.length; i++) {
+          const container = document.getElementById(`export-slide-${i}`);
+          const target = container?.querySelector('#capture-target') as HTMLElement;
+          if (target) targets.push(target);
+        }
+
+        if (state.exportFormat === 'pdf') {
+          const { jsPDF } = await import('jspdf');
+          // Use first slide to determine PDF dimensions
+          const firstImage = await captureElement(targets[0]);
+          const imgProps = new Image();
+          imgProps.src = firstImage;
+          await new Promise(resolve => imgProps.onload = resolve);
           
-          if (state.exportFormat === 'pdf') {
-            const { jsPDF } = await import('jspdf');
-            const pdf = new jsPDF({
-              orientation: 'portrait',
-              unit: 'px',
-              format: [canvas.width, canvas.height]
-            });
-            pdf.addImage(dataUrl, 'PNG', 0, 0, canvas.width, canvas.height);
-            pdf.save(`xhs-card-p${currentSlide + 1}-${Date.now()}.pdf`);
-            setExportProgress(100);
-            setIsGenerating(false);
-            return;
+          // PDF dimensions in points/pixels? jsPDF 'px' unit uses 1px = 1/96 inch?
+          // Let's use the image dimensions directly
+          const pdfWidth = imgProps.width;
+          const pdfHeight = imgProps.height;
+          
+          const pdf = new jsPDF({
+            orientation: pdfWidth > pdfHeight ? 'l' : 'p',
+            unit: 'px',
+            format: [pdfWidth, pdfHeight]
+          });
+
+          pdf.addImage(firstImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          setExportProgress(10 + Math.floor(1 / slides.length * 80));
+
+          for (let i = 1; i < slides.length; i++) {
+            const dataUrl = await captureElement(targets[i]);
+            pdf.addPage([pdfWidth, pdfHeight]);
+            pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            setExportProgress(10 + Math.floor((i + 1) / slides.length * 80));
           }
-          success = true;
-        } catch (err) {
-          console.error('html2canvas also failed:', err);
-          throw new Error('Image generation failed for both engines. Please try removing external images or simplifying the card.');
+          pdf.save(`xhs-cards-batch-${Date.now()}.pdf`);
+
+        } else {
+          // ZIP EXPORT
+          const JSZip = (await import('jszip')).default;
+          const zip = new JSZip();
+          
+          for (let i = 0; i < slides.length; i++) {
+            const dataUrl = await captureElement(targets[i]);
+            const fileName = `card-${i + 1}.${state.exportFormat}`;
+            zip.file(fileName, dataUrl.split(',')[1], { base64: true });
+            setExportProgress(10 + Math.floor((i + 1) / slides.length * 80));
+          }
+          
+          const content = await zip.generateAsync({ type: 'blob' });
+          const url = URL.createObjectURL(content);
+          
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `xhs-cards-batch-${Date.now()}.zip`;
+          link.click();
+          
+          setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+      } else {
+        // --- SINGLE EXPORT ---
+        const target = cardRef.current?.querySelector('#capture-target') as HTMLElement;
+        if (!target) throw new Error("Capture target not found");
+        
+        const dataUrl = await captureElement(target);
+        
+        setGeneratedImage(dataUrl);
+        setExportProgress(100);
+
+        // Desktop: auto download
+        if (!isMobile) {
+          const link = document.createElement('a');
+          link.href = dataUrl;
+          link.download = `xhs-card-p${currentSlide + 1}-${Date.now()}.${state.exportFormat === 'webp' ? 'webp' : 'png'}`;
+          link.click();
         }
       }
 
-      // 4. Output
-      setGeneratedImage(dataUrl);
-      setExportProgress(100);
-
-      // Desktop: auto download
-      if (!isMobile) {
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = `xhs-card-p${currentSlide + 1}-${Date.now()}.${state.exportFormat === 'webp' ? 'webp' : 'png'}`;
-        link.click();
-      }
-
     } catch (error) {
+      console.error('Export failed:', error);
       setExportError('生成失败，请重试');
     } finally {
       setIsGenerating(false);
@@ -475,6 +517,24 @@ const App: React.FC = () => {
             >
               <CardPreview ref={measureRef} state={{ ...state, content: measureContent }} />
             </div>
+            
+            {/* Hidden Batch Export Container */}
+            {slides.length > 1 && slides.map((slideContent, index) => (
+              <div
+                key={`export-${index}`}
+                id={`export-slide-${index}`}
+                className="export-slide-container"
+                style={{
+                  aspectRatio: `${ratioConfig.value}`,
+                  height: isMobile ? 'auto' : '85vh',
+                  width: isMobile ? '90%' : 'auto',
+                  maxHeight: isMobile ? 'none' : 'none',
+                  // Ensure specific width is captured if possible, but the above mimics the main container
+                }}
+              >
+                <CardPreview state={{ ...state, content: slideContent }} />
+              </div>
+            ))}
           </div>
 
           {/* Pagination Controls */}
