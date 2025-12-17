@@ -268,8 +268,15 @@ const App: React.FC = () => {
       // 3. Determine Scale based on DPR
       const scale = isMobile ? 2 : 3; // Reduced mobile scale slightly for stability
       let dataUrl = '';
-
       let success = false;
+
+      // Helper for timeout
+      const withTimeout = <T,>(promise: Promise<T>, ms: number, label: string): Promise<T> => {
+        return Promise.race([
+          promise,
+          new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms))
+        ]);
+      };
 
       // Try html-to-image first if configured
       if (state.exportEngine === 'html-to-image' && state.exportFormat === 'png') {
@@ -277,69 +284,83 @@ const App: React.FC = () => {
           const { toPng } = await import('html-to-image');
           setExportProgress(60);
           
-          // Add timeout to prevent infinite hanging
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Generation timed out')), 10000)
-          );
-
-          dataUrl = await Promise.race([
+          dataUrl = await withTimeout(
             toPng(elementToCapture, { 
               cacheBust: true, 
               pixelRatio: scale, 
               quality: 1.0,
-              skipAutoScale: true
+              skipAutoScale: true,
+              // Filter out non-visible elements to reduce work
+              filter: (node) => {
+                return !node.classList?.contains('exclude-from-capture');
+              }
             }),
-            timeoutPromise
-          ]) as string;
+            5000, // 5s timeout
+            'html-to-image'
+          );
           
           success = true;
         } catch (error) {
-          console.warn('html-to-image failed, falling back to html2canvas:', error);
+          console.warn('html-to-image failed or timed out:', error);
           // Fall through to html2canvas
         }
       }
 
       // Fallback or default to html2canvas
       if (!success) {
-        const html2canvas = (await import('html2canvas')).default;
-        setExportProgress(state.exportEngine === 'html-to-image' ? 70 : 60); // Update progress if falling back
-        
-        const canvas = await html2canvas(elementToCapture, {
-          scale: scale,
-          useCORS: true,
-          backgroundColor: null,
-          logging: false,
-          allowTaint: true,
-          scrollY: 0,
-          windowWidth: elementToCapture.scrollWidth,
-          windowHeight: elementToCapture.scrollHeight,
-          onclone: (clonedDoc) => {
-            const clonedElement = clonedDoc.getElementById('capture-target');
-            if (clonedElement) {
-              clonedElement.style.transform = 'none';
-              clonedElement.style.visibility = 'visible';
-            }
+        console.log('Falling back to html2canvas...');
+        try {
+          const html2canvas = (await import('html2canvas')).default;
+          setExportProgress(state.exportEngine === 'html-to-image' ? 70 : 60);
+          
+          const canvas = await withTimeout(
+            html2canvas(elementToCapture, {
+              scale: scale,
+              useCORS: true,
+              backgroundColor: null,
+              logging: false, // Enable for debugging if needed
+              allowTaint: true,
+              scrollY: 0,
+              windowWidth: elementToCapture.scrollWidth,
+              windowHeight: elementToCapture.scrollHeight,
+              ignoreElements: (element) => element.classList.contains('exclude-from-capture'),
+              onclone: (clonedDoc) => {
+                const clonedElement = clonedDoc.getElementById('capture-target');
+                if (clonedElement) {
+                  clonedElement.style.transform = 'none';
+                  clonedElement.style.visibility = 'visible';
+                  // Force background to be opaque if transparency is causing issues? 
+                  // clonedElement.style.backgroundColor = state.customBgColor || '#ffffff';
+                }
+              }
+            }),
+            8000, // 8s timeout for html2canvas (it can be slower)
+            'html2canvas'
+          );
+          
+          if (state.exportFormat === 'webp') {
+            dataUrl = canvas.toDataURL('image/webp', 0.95);
+          } else {
+            dataUrl = canvas.toDataURL('image/png', 1.0);
           }
-        });
-        
-        if (state.exportFormat === 'webp') {
-          dataUrl = canvas.toDataURL('image/webp', 0.95);
-        } else {
-          dataUrl = canvas.toDataURL('image/png', 1.0);
-        }
-        
-        if (state.exportFormat === 'pdf') {
-          const { jsPDF } = await import('jspdf');
-          const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'px',
-            format: [canvas.width, canvas.height]
-          });
-          pdf.addImage(dataUrl, 'PNG', 0, 0, canvas.width, canvas.height);
-          pdf.save(`xhs-card-p${currentSlide + 1}-${Date.now()}.pdf`);
-          setExportProgress(100);
-          setIsGenerating(false);
-          return;
+          
+          if (state.exportFormat === 'pdf') {
+            const { jsPDF } = await import('jspdf');
+            const pdf = new jsPDF({
+              orientation: 'portrait',
+              unit: 'px',
+              format: [canvas.width, canvas.height]
+            });
+            pdf.addImage(dataUrl, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save(`xhs-card-p${currentSlide + 1}-${Date.now()}.pdf`);
+            setExportProgress(100);
+            setIsGenerating(false);
+            return;
+          }
+          success = true;
+        } catch (err) {
+          console.error('html2canvas also failed:', err);
+          throw new Error('Image generation failed for both engines. Please try removing external images or simplifying the card.');
         }
       }
 
