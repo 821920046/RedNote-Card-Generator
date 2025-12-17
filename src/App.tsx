@@ -44,7 +44,7 @@ const App: React.FC = () => {
     paragraphSpacing: 12,
     textAlign: 'left',
     autoFontSize: true,
-    exportEngine: 'html2canvas',
+    exportEngine: 'html-to-image',
     exportFormat: 'png',
     autoEmoji: true,
     autoPaginate: true,
@@ -56,6 +56,10 @@ const App: React.FC = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
+        // Force upgrade to html-to-image for better compatibility with gradient texts
+        if (parsed.exportEngine === 'html2canvas') {
+          parsed.exportEngine = 'html-to-image';
+        }
         setState(prev => ({ ...prev, ...parsed }));
       } catch (e) {
         console.error('Failed to load draft:', e);
