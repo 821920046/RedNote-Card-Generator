@@ -158,10 +158,18 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
     const year = now.getFullYear();
 
     return (
-      <div className={`absolute top-6 right-6 flex flex-col items-center justify-center p-2 rounded-lg border-2 ${state.backgroundImage ? 'bg-white/90 border-gray-900 text-gray-900' : ''}`} style={{ borderColor: textStyle.color || 'currentColor', color: textStyle.color || 'currentColor' }}>
-        <div className="text-xs font-bold uppercase leading-none mb-1">{year}</div>
-        <div className="text-2xl font-black leading-none">{day}</div>
-        <div className="text-xs font-bold uppercase leading-none mt-1 border-t border-current pt-1 w-full text-center">{month}月</div>
+      <div 
+        className={`absolute top-6 right-6 flex flex-col items-center justify-center rounded-lg border-2 ${state.backgroundImage ? 'bg-white/90 border-gray-900 text-gray-900' : ''}`} 
+        style={{ 
+          borderColor: textStyle.color || 'currentColor', 
+          color: textStyle.color || 'currentColor',
+          minWidth: '60px',
+          padding: '8px 6px'
+        }}
+      >
+        <div style={{ fontSize: '12px', fontWeight: 'bold', lineHeight: '1', marginBottom: '4px', fontFamily: 'Arial, sans-serif' }}>{year}</div>
+        <div style={{ fontSize: '32px', fontWeight: '900', lineHeight: '1', fontFamily: 'Arial, sans-serif' }}>{day}</div>
+        <div style={{ fontSize: '12px', fontWeight: 'bold', lineHeight: '1', marginTop: '6px', paddingTop: '4px', borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: 'currentColor', width: '100%', textAlign: 'center', fontFamily: 'Arial, sans-serif' }}>{month}月</div>
       </div>
     );
   };
