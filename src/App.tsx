@@ -276,28 +276,58 @@ const App: React.FC = () => {
         ]);
       };
 
+      // Helper to load images
+      const preloadImages = async (element: HTMLElement) => {
+        const images = Array.from(element.querySelectorAll('img'));
+        const promises = images.map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve; // Continue even if image fails
+          });
+        });
+        await Promise.all(promises);
+      };
+
+      await preloadImages(elementToCapture);
+
       // Try html-to-image first if configured
       if (state.exportEngine === 'html-to-image' && state.exportFormat === 'png') {
         try {
           const { toPng } = await import('html-to-image');
           setExportProgress(60);
           
-          dataUrl = await withTimeout(
-            toPng(elementToCapture, { 
-              cacheBust: true, 
-              pixelRatio: scale, 
-              quality: 1.0,
-              skipAutoScale: true,
-              // Filter out non-visible elements to reduce work
-              filter: (node) => {
-                return !node.classList?.contains('exclude-from-capture');
-              }
-            }),
-            5000, // 5s timeout
-            'html-to-image'
-          );
-          
-          success = true;
+          // First attempt
+          try {
+            dataUrl = await withTimeout(
+              toPng(elementToCapture, { 
+                cacheBust: true, 
+                pixelRatio: scale, 
+                quality: 1.0,
+                skipAutoScale: true,
+                filter: (node) => !node.classList?.contains('exclude-from-capture')
+              }),
+              10000, // Increased to 10s
+              'html-to-image-attempt-1'
+            );
+            success = true;
+          } catch (firstError) {
+            console.warn('html-to-image first attempt failed, retrying...', firstError);
+            // Second attempt with slightly different settings or just retry
+            await new Promise(r => setTimeout(r, 500));
+            dataUrl = await withTimeout(
+              toPng(elementToCapture, { 
+                cacheBust: true, 
+                pixelRatio: scale, 
+                quality: 1.0,
+                skipAutoScale: true,
+                filter: (node) => !node.classList?.contains('exclude-from-capture')
+              }),
+              15000, // 15s for retry
+              'html-to-image-attempt-2'
+            );
+            success = true;
+          }
         } catch (error) {
           console.warn('html-to-image failed or timed out:', error);
           // Fall through to html2canvas
@@ -316,7 +346,7 @@ const App: React.FC = () => {
               scale: scale,
               useCORS: true,
               backgroundColor: null,
-              logging: false, // Enable for debugging if needed
+              logging: false, 
               allowTaint: true,
               scrollY: 0,
               windowWidth: elementToCapture.scrollWidth,
@@ -327,12 +357,10 @@ const App: React.FC = () => {
                 if (clonedElement) {
                   clonedElement.style.transform = 'none';
                   clonedElement.style.visibility = 'visible';
-                  // Force background to be opaque if transparency is causing issues? 
-                  // clonedElement.style.backgroundColor = state.customBgColor || '#ffffff';
                 }
               }
             }),
-            8000, // 8s timeout for html2canvas (it can be slower)
+            20000, // Increased to 20s
             'html2canvas'
           );
           
@@ -429,8 +457,8 @@ const App: React.FC = () => {
             style={{
               aspectRatio: `${ratioConfig.value}`,
               height: isMobile ? 'auto' : '85vh',
-              width: isMobile ? '85%' : 'auto',
-              maxHeight: isMobile ? '70vh' : 'none',
+              width: isMobile ? '90%' : 'auto', // Increased mobile width
+              maxHeight: isMobile ? 'none' : 'none', // Removed max-height constraint on mobile
             }}
           >
             <CardPreview ref={cardRef} state={{ ...state, content: currentContent }} />
@@ -441,8 +469,8 @@ const App: React.FC = () => {
               style={{
                 aspectRatio: `${ratioConfig.value}`,
                 height: isMobile ? 'auto' : '85vh',
-                width: isMobile ? '85%' : 'auto',
-                maxHeight: isMobile ? '70vh' : 'none',
+                width: isMobile ? '90%' : 'auto',
+                maxHeight: isMobile ? 'none' : 'none',
               }}
             >
               <CardPreview ref={measureRef} state={{ ...state, content: measureContent }} />

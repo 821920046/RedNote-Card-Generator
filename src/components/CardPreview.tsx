@@ -158,7 +158,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
     const year = now.getFullYear();
 
     return (
-      <div className={`absolute top-6 right-6 flex flex-col items-center justify-center p-2 rounded-lg border-2 ${state.backgroundImage ? 'bg-white/90 border-gray-900 text-gray-900' : ''}`} style={{ borderColor: textStyle.color || 'currentColor', color: textStyle.color || 'currentColor', ...textStyle }}>
+      <div className={`absolute top-6 right-6 flex flex-col items-center justify-center p-2 rounded-lg border-2 ${state.backgroundImage ? 'bg-white/90 border-gray-900 text-gray-900' : ''}`} style={{ borderColor: textStyle.color || 'currentColor', color: textStyle.color || 'currentColor' }}>
         <div className="text-xs font-bold uppercase leading-none mb-1">{year}</div>
         <div className="text-2xl font-black leading-none">{day}</div>
         <div className="text-xs font-bold uppercase leading-none mt-1 border-t border-current pt-1 w-full text-center">{month}月</div>
