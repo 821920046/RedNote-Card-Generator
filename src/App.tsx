@@ -266,16 +266,44 @@ const App: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 200));
 
       // 3. Determine Scale based on DPR
-      const scale = isMobile ? 3 : 3;
+      const scale = isMobile ? 2 : 3; // Reduced mobile scale slightly for stability
       let dataUrl = '';
 
+      let success = false;
+
+      // Try html-to-image first if configured
       if (state.exportEngine === 'html-to-image' && state.exportFormat === 'png') {
-        const { toPng } = await import('html-to-image');
-        setExportProgress(60);
-        dataUrl = await toPng(elementToCapture, { cacheBust: true, pixelRatio: scale, quality: 1.0 });
-      } else {
+        try {
+          const { toPng } = await import('html-to-image');
+          setExportProgress(60);
+          
+          // Add timeout to prevent infinite hanging
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Generation timed out')), 10000)
+          );
+
+          dataUrl = await Promise.race([
+            toPng(elementToCapture, { 
+              cacheBust: true, 
+              pixelRatio: scale, 
+              quality: 1.0,
+              skipAutoScale: true
+            }),
+            timeoutPromise
+          ]) as string;
+          
+          success = true;
+        } catch (error) {
+          console.warn('html-to-image failed, falling back to html2canvas:', error);
+          // Fall through to html2canvas
+        }
+      }
+
+      // Fallback or default to html2canvas
+      if (!success) {
         const html2canvas = (await import('html2canvas')).default;
-        setExportProgress(60);
+        setExportProgress(state.exportEngine === 'html-to-image' ? 70 : 60); // Update progress if falling back
+        
         const canvas = await html2canvas(elementToCapture, {
           scale: scale,
           useCORS: true,
@@ -293,11 +321,13 @@ const App: React.FC = () => {
             }
           }
         });
+        
         if (state.exportFormat === 'webp') {
           dataUrl = canvas.toDataURL('image/webp', 0.95);
         } else {
           dataUrl = canvas.toDataURL('image/png', 1.0);
         }
+        
         if (state.exportFormat === 'pdf') {
           const { jsPDF } = await import('jspdf');
           const pdf = new jsPDF({
