@@ -1,7 +1,7 @@
 import React from 'react';
 import { CardState } from '../../types';
 import { PRESETS } from '../../constants';
-import { RotateCcw, Calendar } from 'lucide-react';
+import { RotateCcw, Calendar, Stamp } from 'lucide-react';
 
 interface ContentTabProps {
     state: CardState;
