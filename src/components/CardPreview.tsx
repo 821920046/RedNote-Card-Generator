@@ -159,7 +159,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
 
     return (
       <div 
-        className={`absolute top-6 right-6 flex flex-col items-center justify-center rounded-lg border-2 ${state.backgroundImage ? 'bg-white/90 border-gray-900 text-gray-900' : ''}`} 
+        className={`absolute top-4 right-4 md:top-8 md:right-8 z-20 flex flex-col items-center justify-center rounded-lg border-2 ${state.backgroundImage ? 'bg-white/90 border-gray-900 text-gray-900' : ''}`} 
         style={{ 
           borderColor: textStyle.color || 'currentColor', 
           color: textStyle.color || 'currentColor',
@@ -179,7 +179,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
       case 'list':
         return (
           <div className="flex flex-col flex-1 min-h-0 relative z-10">
-            <div className="space-y-3 md:space-y-4 mb-4 md:mb-6 shrink-0 pr-16">
+            <div className={`space-y-3 md:space-y-4 mb-4 md:mb-6 shrink-0 ${state.showDate ? 'pr-20 md:pr-28' : 'pr-4'}`}>
               <h1 className={`${textClass} ${sizeConfig.title} font-extrabold leading-tight tracking-tight drop-shadow-sm`} style={textStyle}>{state.title}</h1>
               <p className={`${accentClass} ${sizeConfig.subtitle} font-light tracking-wider opacity-80`} style={accentStyle}>{state.subtitle}</p>
               <div className={`h-1.5 w-16 md:w-20 rounded-full ${accentClass}`} style={{ backgroundColor: accentStyle.color, ...accentStyle }}></div>
@@ -192,7 +192,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
 
       case 'quote':
         return (
-          <div className="flex flex-col justify-center items-center text-center flex-1 min-h-0 space-y-6 md:space-y-8 relative z-10">
+          <div className={`flex flex-col justify-center items-center text-center flex-1 min-h-0 space-y-6 md:space-y-8 relative z-10 ${state.showDate ? 'px-8' : ''}`}>
             <Quote size={40} className={`${accentClass} opacity-80 md:w-12 md:h-12`} style={accentStyle} />
             <blockquote className={`${textClass} ${sizeConfig.quote} font-bold leading-tight px-2 md:px-4 drop-shadow-sm`} style={textStyle}>
               <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>{state.content}</ReactMarkdown>
@@ -204,7 +204,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
       case 'dict':
         return (
           <div className="flex flex-col flex-1 min-h-0 pt-2 md:pt-4 relative z-10">
-            <div className="mb-6 md:mb-8 border-b-2 pb-4 border-opacity-20 shrink-0 pr-12" style={{ borderColor: textStyle.color || 'currentColor' }}>
+            <div className={`mb-6 md:mb-8 border-b-2 pb-4 border-opacity-20 shrink-0 ${state.showDate ? 'pr-24' : 'pr-12'}`} style={{ borderColor: textStyle.color || 'currentColor' }}>
               <p className={`text-lg opacity-80 mb-2 ${accentClass}`} style={accentStyle}>{state.subtitle || 'Definition'}</p>
               <h1 className={`${textClass} ${sizeConfig.dict} font-extrabold leading-none`} style={textStyle}>{state.title}</h1>
             </div>
@@ -217,7 +217,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
       case 'grid':
         return (
           <div className="flex flex-col flex-1 min-h-0 space-y-4 md:space-y-6 relative z-10">
-            <div className="text-center shrink-0">
+            <div className={`text-center shrink-0 ${state.showDate ? 'px-10' : ''}`}>
               <h1 className={`${textClass} ${sizeConfig.title} font-extrabold leading-tight drop-shadow-sm`} style={textStyle}>{state.title}</h1>
               <p className={`${accentClass} ${sizeConfig.subtitle} opacity-70 mt-2 bg-white/30 rounded inline-block px-2`} style={accentStyle}>{state.subtitle}</p>
             </div>
@@ -230,7 +230,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
       case 'sketch':
         return (
           <div className="flex flex-col flex-1 min-h-0 p-2 md:p-3 relative z-10" style={sketchBorderStyle}>
-            <div className="flex items-start mb-4 md:mb-6 pt-2 md:pt-4 px-2 shrink-0">
+            <div className={`flex items-start mb-4 md:mb-6 pt-2 md:pt-4 px-2 shrink-0 ${state.showDate ? 'pr-16' : ''}`}>
               <Sparkles size={32} className={`${accentClass} md:w-10 md:h-10`} style={accentStyle} />
               <h1 className={`${textClass} ${sizeConfig.sketchTitle} font-bold leading-tight ml-3 md:ml-4`} style={textStyle}>
                 {state.title}
@@ -246,7 +246,7 @@ const CardPreview = forwardRef<HTMLDivElement, CardPreviewProps>(({ state, class
       case 'minimalist':
         return (
           <div className="flex flex-col justify-between flex-1 min-h-0 py-2 md:py-4 relative z-10">
-            <div className="space-y-4 md:space-y-6 text-center shrink-0">
+            <div className={`space-y-4 md:space-y-6 text-center shrink-0 ${state.showDate ? 'px-12' : ''}`}>
               <p className={`${accentClass} ${sizeConfig.minimalistSubtitle} font-light tracking-[0.2em] uppercase`} style={accentStyle}>{state.subtitle}</p>
               <h1 className={`${textClass} ${sizeConfig.minimalistTitle} font-thin leading-tight drop-shadow-sm`} style={textStyle}>{state.title}</h1>
             </div>
