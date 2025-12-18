@@ -273,8 +273,8 @@ const App: React.FC = () => {
       };
 
       const captureElement = async (element: HTMLElement): Promise<string> => {
-        await preloadImages(element);
-        const scale = isMobile ? 2 : 3;
+        // await preloadImages(element); // html-to-image handles image loading internally usually
+        const scale = 2; // Reduced from 3 to 2 for performance. 2x is sufficient for Retina.
         let dataUrl = '';
         let success = false;
 
@@ -283,37 +283,19 @@ const App: React.FC = () => {
           try {
             const { toPng } = await import('html-to-image');
             
-            // First attempt
-            try {
-              dataUrl = await withTimeout(
-                toPng(element, { 
-                  cacheBust: true, 
-                  pixelRatio: scale, 
-                  quality: 1.0,
-                  skipAutoScale: true,
-                  filter: (node) => !node.classList?.contains('exclude-from-capture')
-                }),
-                10000, 
-                'html-to-image-attempt-1'
-              );
-              success = true;
-            } catch (firstError) {
-              console.warn('html-to-image first attempt failed, retrying...', firstError);
-              // Second attempt
-              await new Promise(r => setTimeout(r, 500));
-              dataUrl = await withTimeout(
-                toPng(element, { 
-                  cacheBust: true, 
-                  pixelRatio: scale, 
-                  quality: 1.0,
-                  skipAutoScale: true,
-                  filter: (node) => !node.classList?.contains('exclude-from-capture')
-                }),
-                15000, 
-                'html-to-image-attempt-2'
-              );
-              success = true;
-            }
+            // Optimized attempt
+            dataUrl = await withTimeout(
+              toPng(element, { 
+                cacheBust: false, // significant performance boost
+                pixelRatio: scale, 
+                quality: 1.0,
+                skipAutoScale: true,
+                filter: (node) => !node.classList?.contains('exclude-from-capture')
+              }),
+              8000, // Reduced timeout
+              'html-to-image'
+            );
+            success = true;
           } catch (error) {
             console.warn('html-to-image failed or timed out:', error);
             // Fall through to html2canvas
@@ -359,8 +341,7 @@ const App: React.FC = () => {
       // 1. Wait for fonts
       if (document.fonts) await document.fonts.ready;
       setExportProgress(10);
-      await new Promise(resolve => setTimeout(resolve, 200));
-
+      
       // 2. Determine Single vs Batch
       if (slides.length > 1) {
         // --- BATCH EXPORT ---
@@ -371,16 +352,23 @@ const App: React.FC = () => {
           if (target) targets.push(target);
         }
 
+        // Parallel generation for speed
+        const generatePromises = targets.map((target, index) => 
+          captureElement(target).then(res => {
+            setExportProgress(prev => (prev || 10) + Math.floor(80 / targets.length));
+            return res;
+          })
+        );
+        
+        const images = await Promise.all(generatePromises);
+
         if (state.exportFormat === 'pdf') {
           const { jsPDF } = await import('jspdf');
-          // Use first slide to determine PDF dimensions
-          const firstImage = await captureElement(targets[0]);
+          
           const imgProps = new Image();
-          imgProps.src = firstImage;
+          imgProps.src = images[0];
           await new Promise(resolve => imgProps.onload = resolve);
           
-          // PDF dimensions in points/pixels? jsPDF 'px' unit uses 1px = 1/96 inch?
-          // Let's use the image dimensions directly
           const pdfWidth = imgProps.width;
           const pdfHeight = imgProps.height;
           
@@ -390,15 +378,11 @@ const App: React.FC = () => {
             format: [pdfWidth, pdfHeight]
           });
 
-          pdf.addImage(firstImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
-          setExportProgress(10 + Math.floor(1 / slides.length * 80));
-
-          for (let i = 1; i < slides.length; i++) {
-            const dataUrl = await captureElement(targets[i]);
-            pdf.addPage([pdfWidth, pdfHeight]);
-            pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            setExportProgress(10 + Math.floor((i + 1) / slides.length * 80));
-          }
+          images.forEach((imgData, i) => {
+            if (i > 0) pdf.addPage([pdfWidth, pdfHeight]);
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          });
+          
           pdf.save(`xhs-cards-batch-${Date.now()}.pdf`);
 
         } else {
@@ -406,12 +390,10 @@ const App: React.FC = () => {
           const JSZip = (await import('jszip')).default;
           const zip = new JSZip();
           
-          for (let i = 0; i < slides.length; i++) {
-            const dataUrl = await captureElement(targets[i]);
-            const fileName = `card-${i + 1}.${state.exportFormat}`;
-            zip.file(fileName, dataUrl.split(',')[1], { base64: true });
-            setExportProgress(10 + Math.floor((i + 1) / slides.length * 80));
-          }
+          images.forEach((imgData, i) => {
+             const fileName = `card-${i + 1}.${state.exportFormat}`;
+             zip.file(fileName, imgData.split(',')[1], { base64: true });
+          });
           
           const content = await zip.generateAsync({ type: 'blob' });
           const url = URL.createObjectURL(content);
